@@ -1,0 +1,38 @@
+#
+# migratespec.yml
+#
+
+version: 0.2
+
+env:
+  variables:
+    deploy_bucket: aptrust-submit-lambda-deployable
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.x
+#    commands:
+
+  pre_build:
+    commands:
+      # copy migration script
+      - aws s3 cp s3://${deploy_bucket}/latest/scripts/migrate.ksh . --quiet && chmod +x migrate.ksh
+      # install the migrate binary
+      - mkdir bin && cd bin && curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.3/migrate.linux-amd64.tar.gz | tar xvz && chmod +x migrate
+
+  build:
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}
+      #
+      # libra-audit migrations
+      #
+      #- mkdir -p libra-audit/migrations && aws s3 cp s3://${deploy_bucket}/latest/libra-audit/migrations libra-audit/migrations --recursive --include *.sql --quiet
+      #- ${CODEBUILD_SRC_DIR}/migrate.ksh libra-audit/migrations libra_audit_migrations up
+
+#  post_build:
+#    commands:
+
+#
+# end of file
+#

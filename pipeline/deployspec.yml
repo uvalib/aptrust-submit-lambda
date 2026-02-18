@@ -1,0 +1,31 @@
+#
+# deployspec.yml
+#
+
+version: 0.2
+
+env:
+  variables:
+    deploy_bucket: aptrust-submit-lambda-deployable
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.x
+#    commands:
+
+#  pre_build:
+#    commands:
+
+  build:
+    commands:
+      #
+      # libra-audit function
+      #- aws lambda update-function-code --function-name uva-libra-audit-staging --s3-bucket ${deploy_bucket} --s3-key latest/libra-audit/deployment.zip
+
+#  post_build:
+#    commands:
+
+#
+# end of file
+#

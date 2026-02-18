@@ -1,0 +1,58 @@
+#
+# buildspec.yml
+#
+
+version: 0.2
+
+env:
+  variables:
+    deploy_bucket: aptrust-submit-lambda-deployable
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.x
+#    commands:
+
+  pre_build:
+    commands:
+      - BUILD_VERSION=$(date --date="@$(echo ${CODEBUILD_START_TIME} | cut -c1-10)" +"%Y%m%d%H%M%S")
+      - COMMIT_TAG=gitcommit-${CODEBUILD_RESOLVED_SOURCE_VERSION}
+
+  build:
+    commands:
+      #
+      # build the assets
+      #
+      #- cd ${CODEBUILD_SRC_DIR}/libra-audit
+      #- make linux
+      #
+      # copy to the results bucket
+      #
+      #
+      # libra-audit function plus migrations
+      #- aws s3 cp ${CODEBUILD_SRC_DIR}/libra-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/libra-audit/deployment.zip --quiet
+      #- aws s3 cp ${CODEBUILD_SRC_DIR}/libra-audit/migrations s3://${deploy_bucket}/${BUILD_VERSION}/libra-audit/migrations --recursive --include *.sql --quiet
+      #
+      # scripts
+      #- aws s3 cp ${CODEBUILD_SRC_DIR}/scripts s3://${deploy_bucket}/${BUILD_VERSION}/scripts --recursive --include *.ksh --quiet
+      #
+      # create the git commit tag file
+      #
+      - touch ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git s3://${deploy_bucket}/${BUILD_VERSION}/${COMMIT_TAG}.git --quiet
+      #
+      # make the latest folder
+      #
+      - aws s3 sync s3://${deploy_bucket}/${BUILD_VERSION} s3://${deploy_bucket}/latest --delete --quiet
+      #
+      # update the latest tag
+      #
+      - aws --region=$AWS_REGION ssm put-parameter --name /lambdas/${deploy_bucket}/latest --value ${BUILD_VERSION} --type String --overwrite
+
+#  post_build:
+#    commands:
+
+#
+# end of file
+#
