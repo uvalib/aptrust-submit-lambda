@@ -45,7 +45,7 @@ MIGRATE_CMD=${1}
 shift
 
 # our connection string
-CONNECTION_STR=""mysql://${DB_USER}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?x-migrations-table=${DB_MIGRATE_TABLE}"
+CONNECTION_STR="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?x-migrations-table=${DB_MIGRATE_TABLE}"
 
 # run the migration
 ${MIGRATE_TOOL} -path ${MIGRATE_DIR} --database ${CONNECTION_STR} ${MIGRATE_CMD}
