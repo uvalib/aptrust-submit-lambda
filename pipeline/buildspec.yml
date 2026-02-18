@@ -39,16 +39,16 @@ phases:
       #
       # create the git commit tag file
       #
-      - touch ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git
-      - aws s3 cp ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git s3://${deploy_bucket}/${BUILD_VERSION}/${COMMIT_TAG}.git --quiet
+      #- touch ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git
+      #- aws s3 cp ${CODEBUILD_SRC_DIR}/${COMMIT_TAG}.git s3://${deploy_bucket}/${BUILD_VERSION}/${COMMIT_TAG}.git --quiet
       #
       # make the latest folder
       #
-      - aws s3 sync s3://${deploy_bucket}/${BUILD_VERSION} s3://${deploy_bucket}/latest --delete --quiet
+      #- aws s3 sync s3://${deploy_bucket}/${BUILD_VERSION} s3://${deploy_bucket}/latest --delete --quiet
       #
       # update the latest tag
       #
-      - aws --region=$AWS_REGION ssm put-parameter --name /lambdas/${deploy_bucket}/latest --value ${BUILD_VERSION} --type String --overwrite
+      #- aws --region=$AWS_REGION ssm put-parameter --name /lambdas/${deploy_bucket}/latest --value ${BUILD_VERSION} --type String --overwrite
 
 #  post_build:
 #    commands:
