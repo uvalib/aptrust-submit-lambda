@@ -21,30 +21,33 @@ func main() {
 	var messageId string
 	var source string
 	var eventName string
-	var namespace string
-	var objectId string
+	var clientId string
+	var submissionId string
+	var bagId string
 	var detail string
 	var eventTime string
 
 	flag.StringVar(&messageId, "messageid", "0-0-0-0", "Message identifier")
 	flag.StringVar(&source, "source", "the.source", "Message source")
 	flag.StringVar(&eventName, "eventname", "", "Event name")
-	flag.StringVar(&namespace, "namespace", "", "Object namespace")
-	flag.StringVar(&objectId, "objid", "", "Object identifier")
-	flag.StringVar(&eventTime, "eventtime", "", "Time of the event")
-	flag.StringVar(&detail, "detail", "", "Event detail, usually json")
+	flag.StringVar(&eventTime, "eventtime", "", "Time of the event (optional)")
+	flag.StringVar(&clientId, "cid", "", "The event client identifier (optional)")
+	flag.StringVar(&submissionId, "sid", "", "The event submission identifier (optional)")
+	flag.StringVar(&bagId, "bid", "", "The event bag identifier (optional)")
+	flag.StringVar(&detail, "detail", "", "Event detail, usually json (optional)")
 	flag.Parse()
 
-	if len(eventName) == 0 || len(namespace) == 0 || len(objectId) == 0 {
+	if len(eventName) == 0 {
 		fmt.Printf("ERROR: incorrect commandline, use --help for details\n")
 		os.Exit(1)
 	}
 
 	ev := uvaaptsbus.UvaBusEvent{}
 	ev.EventName = eventName
-	ev.Namespace = namespace
-	ev.Identifier = objectId
 	ev.EventTime = eventTime
+	ev.ClientId = clientId
+	ev.SubmissionId = submissionId
+	ev.BagId = bagId
 	if len(detail) != 0 {
 		ev.Detail = json.RawMessage(detail)
 	}

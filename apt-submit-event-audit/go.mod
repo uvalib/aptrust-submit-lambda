@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/aws/aws-lambda-go v1.52.0
-	github.com/uvalib/apts-bus-definitions/uvaaptsbus v0.0.0-20260220145628-00f6ae8bbe6c
+	github.com/uvalib/apts-bus-definitions/uvaaptsbus v0.0.0-20260220172634-17d56bdc02ab
 )
 
 require (
