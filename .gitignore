@@ -8,6 +8,7 @@ env.*
 /tmp
 
 # ignore common/shared files
+config-helpers.go
 definitions.go
 main-cmdline.go
 main-lambda-apigw.go
