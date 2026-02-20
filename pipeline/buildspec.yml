@@ -24,7 +24,12 @@ phases:
       #
       # build the assets
       #
+      # apt-submit-event-audit function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-event-audit
+      - make linux
+      #
+      # apt-submit-schedule function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-schedule
       - make linux
       #
       # copy to the results bucket
@@ -32,6 +37,9 @@ phases:
       #
       # apt-submit-event-audit function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-event-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-event-audit/deployment.zip --quiet
+      #
+      # apt-submit-schedule function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-schedule/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-schedule/deployment.zip --quiet
       #
       # libra-audit function plus migrations
       #- aws s3 cp ${CODEBUILD_SRC_DIR}/libra-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/libra-audit/deployment.zip --quiet

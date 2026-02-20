@@ -20,8 +20,11 @@ phases:
   build:
     commands:
       #
-      # libra-audit function
-      #- aws lambda update-function-code --function-name uva-libra-audit-staging --s3-bucket ${deploy_bucket} --s3-key latest/libra-audit/deployment.zip
+      # apt-submit-event-audit function
+      - aws lambda update-function-code --function-name uva-apt-submit-event-audit-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-event-audit/deployment.zip
+      #
+      # apt-submit-schedule function
+      - aws lambda update-function-code --function-name uva-apt-submit-schedule-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-schedule/deployment.zip
 
 #  post_build:
 #    commands:
