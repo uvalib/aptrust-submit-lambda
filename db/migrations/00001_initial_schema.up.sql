@@ -53,10 +53,10 @@ ALTER TABLE bags SET (autovacuum_analyze_scale_factor = 0.1); -- 10%
 ALTER TABLE bags SET (autovacuum_analyze_threshold = 1000);
 
 -- add the clients we know about
-INSERT INTO clients(name, identifier) VALUES( "avalon", "cid-" || uuidv7());
-INSERT INTO clients(name, identifier) VALUES( "libra-etd", "cid-" || uuidv7());
-INSERT INTO clients(name, identifier) VALUES( "libra-open", "cid-" || uuidv7());
-INSERT INTO clients(name, identifier) VALUES( "tracksys", "cid-" || uuidv7());
+INSERT INTO clients(name, identifier) VALUES('avalon',     'cid-' || gen_random_uuid());
+INSERT INTO clients(name, identifier) VALUES('libra-etd',  'cid-' || gen_random_uuid());
+INSERT INTO clients(name, identifier) VALUES('libra-open', 'cid-' || gen_random_uuid());
+INSERT INTO clients(name, identifier) VALUES('tracksys',   'cid-' || gen_random_uuid());
 
 COMMIT;
 
