@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func ensureSet(env string) (string, error) {
@@ -34,6 +35,20 @@ func ensureSetAndNonEmpty(env string) (string, error) {
 	}
 
 	return val, nil
+}
+
+func envToInt(env string) (int, error) {
+
+	number, err := ensureSetAndNonEmpty(env)
+	if err != nil {
+		return -1, err
+	}
+
+	n, err := strconv.Atoi(number)
+	if err != nil {
+		return -1, err
+	}
+	return n, nil
 }
 
 //

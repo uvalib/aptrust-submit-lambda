@@ -24,8 +24,8 @@ deployable:
 	cd bin; zip deployment.zip $(DEPLOYNAME)
 
 common:
-	-ln -s $(COMMON)/config-helpers.go . 2> /dev/null || true
 	-ln -s $(COMMON)/definitions.go . 2> /dev/null || true
+	-ln -s $(COMMON)/env.go . 2> /dev/null || true
 	-ln -s $(COMMON)/main-lambda-eb.go . 2> /dev/null || true
 
 clean:
