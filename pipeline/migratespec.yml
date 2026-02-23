@@ -17,7 +17,7 @@ phases:
   pre_build:
     commands:
       # copy migration script
-      #- aws s3 cp s3://${deploy_bucket}/latest/scripts/migrate.ksh . --quiet && chmod +x migrate.ksh
+      - aws s3 cp s3://${deploy_bucket}/latest/scripts/migrate.ksh . --quiet && chmod +x migrate.ksh
       # install the migrate binary
       - mkdir bin && cd bin && curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz && chmod +x migrate
 
@@ -25,10 +25,10 @@ phases:
     commands:
       - cd ${CODEBUILD_SRC_DIR}
       #
-      # libra-audit migrations
+      # migrations
       #
-      #- mkdir -p libra-audit/migrations && aws s3 cp s3://${deploy_bucket}/latest/libra-audit/migrations libra-audit/migrations --recursive --include *.sql --quiet
-      #- ${CODEBUILD_SRC_DIR}/migrate.ksh libra-audit/migrations libra_audit_migrations up
+      - mkdir -p migrations && aws s3 cp s3://${deploy_bucket}/latest/migrations migrations --recursive --include *.sql --quiet
+      - ${CODEBUILD_SRC_DIR}/migrate.ksh migrations migrations up
 
 #  post_build:
 #    commands:
