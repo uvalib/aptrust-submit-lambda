@@ -32,14 +32,34 @@ phases:
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-schedule
       - make linux
       #
-      # copy to the results bucket
+      # apt-submit-submission-initiate function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-submission-initiate
+      - make linux
       #
+      # apt-submit-submission-register function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-submission-register
+      - make linux
+      #
+      # apt-submit-submission-status function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-submission-status
+      - make linux
+      #
+      # copy to the results bucket
       #
       # apt-submit-event-audit function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-event-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-event-audit/deployment.zip --quiet
       #
       # apt-submit-schedule function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-schedule/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-schedule/deployment.zip --quiet
+      #
+      # apt-submit-submission-initiate function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-submission-initiate/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-submission-initiate/deployment.zip --quiet
+      #
+      # apt-submit-submission-register function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-submission-register/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-submission-register/deployment.zip --quiet
+      #
+      # apt-submit-submission-status function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-submission-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-submission-status/deployment.zip --quiet
       #
       # migrations
       - aws s3 cp ${CODEBUILD_SRC_DIR}/db/migrations s3://${deploy_bucket}/${BUILD_VERSION}/migrations --recursive --include *.sql --quiet

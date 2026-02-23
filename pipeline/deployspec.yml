@@ -25,6 +25,15 @@ phases:
       #
       # apt-submit-schedule function
       - aws lambda update-function-code --function-name uva-apt-submit-schedule-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-schedule/deployment.zip
+      #
+      # apt-submit-submission-initiate function
+      #- aws lambda update-function-code --function-name uva-apt-submit-submission-initiate-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-submission-initiate/deployment.zip
+      #
+      # apt-submit-submission-register function
+      #- aws lambda update-function-code --function-name uva-apt-submit-submission-register-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-submission-register/deployment.zip
+      #
+      # apt-submit-submission-status function
+      #- aws lambda update-function-code --function-name uva-apt-submit-submission-status-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-submission-status/deployment.zip
 
 #  post_build:
 #    commands:

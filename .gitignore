@@ -3,12 +3,12 @@
 */bin/
 */tmp/
 go.work*
-env.*
+env.set
 /bin
 /tmp
 
 # ignore common/shared files
-config-helpers.go
+env.go
 definitions.go
 main-cmdline.go
 main-lambda-apigw.go
