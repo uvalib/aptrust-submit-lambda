@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -56,9 +57,24 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// cleanup on exit
 	defer dao.Close()
 
+	// get the client details
+	c, err := dao.GetClient(cid)
+	if err != nil {
+		if errors.Is(err, ErrClientNotFound) {
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusForbidden}, err
+		}
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
+
+	// create the new submission
+	s, err := dao.CreateSubmission(c.Id)
+	if err != nil {
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
+
 	// construct the response
 	response := ApiResponse{}
-	response.Sid = "sid-xx-example-xx"
+	response.Sid = s.Identifier
 
 	buf, err := json.Marshal(response)
 	if err != nil {

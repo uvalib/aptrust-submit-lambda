@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -56,9 +57,18 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// cleanup on exit
 	defer dao.Close()
 
+	// get the submission status
+	s, err := dao.GetSubmissionStatus(sid)
+	if err != nil {
+		if errors.Is(err, ErrSubmissionNotFound) {
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, err
+		}
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
+
 	// construct the response
 	response := ApiResponse{}
-	response.Status = "pending"
+	response.Status = s.Status
 
 	buf, err := json.Marshal(response)
 	if err != nil {

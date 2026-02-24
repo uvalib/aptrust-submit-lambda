@@ -4,8 +4,11 @@
 
 package main
 
+import "fmt"
+
 // error definitions
-//var ErrNoMetadata = fmt.Errorf("no metadata")
+var ErrClientNotFound = fmt.Errorf("client not found")
+var ErrSubmissionNotFound = fmt.Errorf("submission not found")
 
 //
 // end of file

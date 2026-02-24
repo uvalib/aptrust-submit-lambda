@@ -9,6 +9,7 @@ env.set
 
 # ignore common/shared files
 dao.go
+dao-api.go
 env.go
 definitions.go
 main-cmdline.go

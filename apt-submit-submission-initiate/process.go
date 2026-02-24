@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -13,7 +14,7 @@ import (
 )
 
 type ApiResponse struct {
-	Sid string `json:"sid"`
+	//Sid string `json:"sid"`
 	// other stuff
 }
 
@@ -59,9 +60,29 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// cleanup on exit
 	defer dao.Close()
 
+	// get the client details
+	_, err = dao.GetClient(cid)
+	if err != nil {
+		if errors.Is(err, ErrClientNotFound) {
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusForbidden}, err
+		}
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
+
+	// get the submission
+	_, err = dao.GetSubmission(sid)
+	if err != nil {
+		if errors.Is(err, ErrSubmissionNotFound) {
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, err
+		}
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
+
+	// do more stuff
+
 	// construct the response
 	response := ApiResponse{}
-	response.Sid = "sid-xx-example-xx"
+	//response.Sid = "sid-xx-example-xx"
 
 	buf, err := json.Marshal(response)
 	if err != nil {
