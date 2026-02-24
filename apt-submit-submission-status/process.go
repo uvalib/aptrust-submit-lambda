@@ -42,23 +42,19 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// load configuration
-	//cfg, err := loadConfiguration()
-	_, err := loadConfiguration()
+	cfg, err := loadConfiguration()
 	if err != nil {
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
 	}
 
-	//connectionStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
-	//	cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbName)
+	// create the data access object
+	dao, err := newDao(cfg)
+	if err != nil {
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+	}
 
-	//db, err := sql.Open("postgres", connectionStr)
-	//if err != nil {
-	//	fmt.Printf("ERROR: unable to open database (%s)\n", err.Error())
-	//	return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
-	//}
-
-	// cleanup
-	//defer db.Close()
+	// cleanup on exit
+	defer dao.Close()
 
 	// construct the response
 	response := ApiResponse{}

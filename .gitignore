@@ -8,6 +8,7 @@ env.set
 /tmp
 
 # ignore common/shared files
+dao.go
 env.go
 definitions.go
 main-cmdline.go
