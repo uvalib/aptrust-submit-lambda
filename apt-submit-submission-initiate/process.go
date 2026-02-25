@@ -14,8 +14,7 @@ import (
 )
 
 type Request struct {
-	ManifestName      string `json:"manifest_name"`
-	ManifestSignature string `json:"manifest_signature"`
+	BagFolders []string `json:"bag_folders"`
 }
 
 type Response struct {

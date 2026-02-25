@@ -67,7 +67,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// create the new submission
-	s, err := dao.CreateSubmission(c.Id)
+	s, err := dao.CreateSubmission(c.Identifier)
 	if err != nil {
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
 	}

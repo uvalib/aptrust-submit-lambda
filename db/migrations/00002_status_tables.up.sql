@@ -25,7 +25,7 @@ CREATE TYPE bag_states AS ENUM (
 -- create submission_status table
 CREATE TABLE submission_status (
     id             serial PRIMARY KEY,
-    submission_id  integer REFERENCES submissions(id),
+    submission     VARCHAR( 64 ) NOT NULL DEFAULT '' REFERENCES submissions(identifier),
     status         submission_states,
     created_at     timestamp DEFAULT NOW(),
     updated_at     timestamp DEFAULT NOW()
@@ -34,15 +34,15 @@ CREATE TABLE submission_status (
 -- create bag_status table
 CREATE TABLE bag_status (
     id          serial PRIMARY KEY,
-    bag_id      integer REFERENCES bags(id),
+    bag         VARCHAR( 64 ) NOT NULL DEFAULT '' REFERENCES bags(identifier),
     status      bag_states,
     created_at  timestamp DEFAULT NOW(),
     updated_at  timestamp DEFAULT NOW()
 );
 
--- create the distinct indexes
-CREATE UNIQUE INDEX submission_status_distinct_idx ON submission_status(submission_id);
-CREATE UNIQUE INDEX bag_status_distinct_idx ON bag_status(bag_id);
+-- create the index(s)
+CREATE UNIQUE INDEX submission_status_distinct_idx ON submission_status(submission);
+CREATE UNIQUE INDEX bag_status_distinct_idx ON bag_status(bag);
 
 COMMIT;
 

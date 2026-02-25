@@ -37,7 +37,7 @@ func main() {
 	req.QueryStringParameters["cid"] = clientId
 	req.QueryStringParameters["sid"] = submissionId
 
-	req.Body = "{\"manifest_name\":\"xxx\",\"manifest_signature\":\"123456\"}"
+	req.Body = "{\"bag_folders\":[\"bag1\", \"bag2\", \"bag3\"]}"
 
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {

@@ -63,7 +63,7 @@ func (dao *Dao) GetSubmissionStatus(sid string) (*SubmissionStatus, error) {
 // GetSubmission -- get the specified submission
 func (dao *Dao) GetSubmission(sid string) (*Submission, error) {
 
-	rows, err := dao.Query("SELECT id, identifier, client_id, created_at FROM submissions WHERE identifier = $1 LIMIT 1", sid)
+	rows, err := dao.Query("SELECT identifier, client, created_at FROM submissions WHERE identifier = $1 LIMIT 1", sid)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (dao *Dao) GetSubmission(sid string) (*Submission, error) {
 // GetClient -- get the client details for the specified identifier
 func (dao *Dao) GetClient(cid string) (*Client, error) {
 
-	rows, err := dao.Query("SELECT id, name, identifier, created_at FROM clients WHERE identifier = $1 LIMIT 1", cid)
+	rows, err := dao.Query("SELECT name, identifier, created_at FROM clients WHERE identifier = $1 LIMIT 1", cid)
 	if err != nil {
 		return nil, err
 	}
@@ -95,15 +95,15 @@ func (dao *Dao) GetClient(cid string) (*Client, error) {
 }
 
 // CreateSubmission -- create a new submission for the specified client
-func (dao *Dao) CreateSubmission(clientId int) (*Submission, error) {
+func (dao *Dao) CreateSubmission(client string) (*Submission, error) {
 
-	stmt, err := dao.Prepare("INSERT INTO submissions( identifier, client_id ) VALUES( $1,$2 )")
+	stmt, err := dao.Prepare("INSERT INTO submissions( identifier, client ) VALUES( $1,$2 )")
 	if err != nil {
 		return nil, err
 	}
 
 	newIdentifier := newSubmissionIdentifier()
-	err = execPrepared(stmt, newIdentifier, clientId)
+	err = execPrepared(stmt, newIdentifier, client)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func submissionQueryResults(rows *sql.Rows) (*Submission, error) {
 	count := 0
 
 	for rows.Next() {
-		err := rows.Scan(&results.Id, &results.Identifier, &results.ClientId, &results.Created)
+		err := rows.Scan(&results.Identifier, &results.Client, &results.Created)
 		if err != nil {
 			return nil, err
 		}
@@ -149,7 +149,7 @@ func clientQueryResults(rows *sql.Rows) (*Client, error) {
 	count := 0
 
 	for rows.Next() {
-		err := rows.Scan(&results.Id, &results.Name, &results.Identifier, &results.Created)
+		err := rows.Scan(&results.Name, &results.Identifier, &results.Created)
 		if err != nil {
 			return nil, err
 		}
