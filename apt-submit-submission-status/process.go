@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-type ApiResponse struct {
+type Response struct {
 	Status string `json:"status"`
 	// other stuff
 }
@@ -67,7 +67,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// construct the response
-	response := ApiResponse{}
+	response := Response{}
 	response.Status = s.Status
 
 	buf, err := json.Marshal(response)

@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-type ApiResponse struct {
+type Response struct {
 	Sid string `json:"sid"`
 	// other stuff
 }
@@ -73,7 +73,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// construct the response
-	response := ApiResponse{}
+	response := Response{}
 	response.Sid = s.Identifier
 
 	buf, err := json.Marshal(response)

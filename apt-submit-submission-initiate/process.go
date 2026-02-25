@@ -13,7 +13,12 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-type ApiResponse struct {
+type Request struct {
+	ManifestName      string `json:"manifest_name"`
+	ManifestSignature string `json:"manifest_signature"`
+}
+
+type Response struct {
 	//Sid string `json:"sid"`
 	// other stuff
 }
@@ -43,6 +48,14 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	if len(cid) == 0 || len(sid) == 0 {
 		err := fmt.Errorf("missing required query params: [cid, sid]")
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusBadRequest}, err
+	}
+
+	fmt.Printf("DEBUG: request [%s]\n", request.Body)
+	r := Request{}
+	err := json.Unmarshal([]byte(request.Body), &r)
+	if err != nil {
+		fmt.Printf("ERROR: json.Unmarshal() failed (%s)\n", err.Error())
+		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
 	}
 
 	// load configuration
@@ -81,7 +94,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// do more stuff
 
 	// construct the response
-	response := ApiResponse{}
+	response := Response{}
 	//response.Sid = "sid-xx-example-xx"
 
 	buf, err := json.Marshal(response)
