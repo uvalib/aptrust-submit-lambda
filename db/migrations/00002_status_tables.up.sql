@@ -12,6 +12,7 @@ CREATE TYPE submission_states AS ENUM (
     'submitting',               -- submitting to APTrust
     'pending-ingest',           -- waiting for APTrust to ingest
     'error',                    -- submission has errored in some manner
+    'incomplete',               -- submission is incomplete (one or more bags rejected by APT)
     'complete');                -- submission is complete
 
 CREATE TYPE bag_states AS ENUM (
@@ -43,6 +44,16 @@ CREATE TABLE bag_status (
 -- create the index(s)
 CREATE UNIQUE INDEX submission_status_distinct_idx ON submission_status(submission);
 CREATE UNIQUE INDEX bag_status_distinct_idx ON bag_status(bag);
+
+ALTER TABLE submission_status SET (autovacuum_vacuum_scale_factor = 0.2);  -- 20%
+ALTER TABLE submission_status SET (autovacuum_vacuum_threshold = 1000);
+ALTER TABLE submission_status SET (autovacuum_analyze_scale_factor = 0.1); -- 10%
+ALTER TABLE submission_status SET (autovacuum_analyze_threshold = 1000);
+
+ALTER TABLE bag_status SET (autovacuum_vacuum_scale_factor = 0.2);  -- 20%
+ALTER TABLE bag_status SET (autovacuum_vacuum_threshold = 1000);
+ALTER TABLE bag_status SET (autovacuum_analyze_scale_factor = 0.1); -- 10%
+ALTER TABLE bag_status SET (autovacuum_analyze_threshold = 1000);
 
 COMMIT;
 
