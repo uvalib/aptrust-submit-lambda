@@ -53,11 +53,18 @@ func (dao *Dao) Check() error {
 // GetSubmissionStatus -- get the status of the specified submission
 func (dao *Dao) GetSubmissionStatus(sid string) (*SubmissionStatus, error) {
 
-	_, err := dao.GetSubmission(sid)
+	rows, err := dao.Query("SELECT submission, status, updated_at FROM submission_status WHERE submission = $1 LIMIT 1", sid)
 	if err != nil {
 		return nil, err
 	}
-	return &SubmissionStatus{Identifier: sid, Status: "OK"}, nil
+	defer rows.Close()
+
+	ss, err := submissionStatusQueryResults(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return ss, nil
 }
 
 // GetSubmission -- get the specified submission
@@ -97,13 +104,27 @@ func (dao *Dao) GetClient(cid string) (*Client, error) {
 // CreateSubmission -- create a new submission for the specified client
 func (dao *Dao) CreateSubmission(client string) (*Submission, error) {
 
-	stmt, err := dao.Prepare("INSERT INTO submissions( identifier, client ) VALUES( $1,$2 )")
+	// insert into submissions
+	stmt1, err := dao.Prepare("INSERT INTO submissions( identifier, client ) VALUES( $1,$2 )")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt1.Close()
+
+	newIdentifier := newSubmissionIdentifier()
+	err = execPrepared(stmt1, newIdentifier, client)
 	if err != nil {
 		return nil, err
 	}
 
-	newIdentifier := newSubmissionIdentifier()
-	err = execPrepared(stmt, newIdentifier, client)
+	// insert into submissions_status
+	stmt2, err := dao.Prepare("INSERT INTO submission_status( submission, status ) VALUES( $1,$2 )")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt2.Close()
+
+	err = execPrepared(stmt2, newIdentifier, SubmissionStatusRegistered)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +147,30 @@ func submissionQueryResults(rows *sql.Rows) (*Submission, error) {
 
 	for rows.Next() {
 		err := rows.Scan(&results.Identifier, &results.Client, &results.Created)
+		if err != nil {
+			return nil, err
+		}
+		count++
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// check for not found
+	if count == 0 {
+		return nil, fmt.Errorf("%q: %w", "object(s) not found", ErrSubmissionNotFound)
+	}
+
+	//logDebug(log, fmt.Sprintf("found %d object(s)", count))
+	return &results, nil
+}
+
+func submissionStatusQueryResults(rows *sql.Rows) (*SubmissionStatus, error) {
+	results := SubmissionStatus{}
+	count := 0
+
+	for rows.Next() {
+		err := rows.Scan(&results.Identifier, &results.Status, &results.Updated)
 		if err != nil {
 			return nil, err
 		}

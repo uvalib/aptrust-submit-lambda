@@ -19,8 +19,9 @@ type Submission struct {
 }
 
 type SubmissionStatus struct {
-	Identifier string `json:"identifier"` // submission identifier
-	Status     string `json:"status"`     // current status
+	Identifier string    `json:"identifier"` // submission identifier
+	Status     string    `json:"status"`     // current status
+	Updated    time.Time `json:"updated"`    // created time
 }
 
 //

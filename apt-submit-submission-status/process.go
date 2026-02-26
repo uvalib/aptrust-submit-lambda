@@ -9,12 +9,15 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 )
 
 type Response struct {
-	Status string `json:"status"`
+	Submission string    `json:"submission"`
+	Status     string    `json:"status"`
+	Updated    time.Time `json:"updated"`
 	// other stuff
 }
 
@@ -68,7 +71,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// construct the response
 	response := Response{}
+	response.Submission = s.Identifier
 	response.Status = s.Status
+	response.Updated = s.Updated
 
 	buf, err := json.Marshal(response)
 	if err != nil {
