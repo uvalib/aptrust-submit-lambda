@@ -50,8 +50,8 @@ func (dao *Dao) Check() error {
 	return dao.Ping()
 }
 
-// GetSubmissionStatus -- get the status of the specified submission
-func (dao *Dao) GetSubmissionStatus(sid string) (*SubmissionStatus, error) {
+// GetSubmissionStatusByIdentifier -- get the status of the specified submission
+func (dao *Dao) GetSubmissionStatusByIdentifier(sid string) (*SubmissionStatus, error) {
 
 	rows, err := dao.Query("SELECT submission, status, updated_at FROM submission_status WHERE submission = $1 LIMIT 1", sid)
 	if err != nil {
@@ -67,8 +67,8 @@ func (dao *Dao) GetSubmissionStatus(sid string) (*SubmissionStatus, error) {
 	return ss, nil
 }
 
-// GetSubmission -- get the specified submission
-func (dao *Dao) GetSubmission(sid string) (*Submission, error) {
+// GetSubmissionByIdentifier -- get the specified submission
+func (dao *Dao) GetSubmissionByIdentifier(sid string) (*Submission, error) {
 
 	rows, err := dao.Query("SELECT identifier, client, created_at FROM submissions WHERE identifier = $1 LIMIT 1", sid)
 	if err != nil {
@@ -84,8 +84,8 @@ func (dao *Dao) GetSubmission(sid string) (*Submission, error) {
 	return s, nil
 }
 
-// GetClient -- get the client details for the specified identifier
-func (dao *Dao) GetClient(cid string) (*Client, error) {
+// GetClientByIdentifier -- get the client details for the specified identifier
+func (dao *Dao) GetClientByIdentifier(cid string) (*Client, error) {
 
 	rows, err := dao.Query("SELECT name, identifier, created_at FROM clients WHERE identifier = $1 LIMIT 1", cid)
 	if err != nil {
@@ -101,8 +101,25 @@ func (dao *Dao) GetClient(cid string) (*Client, error) {
 	return c, nil
 }
 
-// CreateSubmission -- create a new submission for the specified client
-func (dao *Dao) CreateSubmission(client string) (*Submission, error) {
+// GetBagsByStatus -- get a list of bags in the current state
+func (dao *Dao) GetBagsByStatus(status string) ([]Bag, error) {
+
+	rows, err := dao.Query("SELECT b.name, b.identifier, b.submission, b.created_at FROM bags b, bag_status s WHERE s.status = $1 AND b.identifier = s.bag;", status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	bags, err := bagsQueryResults(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return bags, nil
+}
+
+// CreateNewSubmission -- create a new submission for the specified client
+func (dao *Dao) CreateNewSubmission(client string) (*Submission, error) {
 
 	// insert into submissions
 	stmt1, err := dao.Prepare("INSERT INTO submissions( identifier, client ) VALUES( $1,$2 )")
@@ -130,7 +147,7 @@ func (dao *Dao) CreateSubmission(client string) (*Submission, error) {
 	}
 
 	// get the submission details
-	s, err := dao.GetSubmission(newIdentifier)
+	s, err := dao.GetSubmissionByIdentifier(newIdentifier)
 	if err != nil {
 		return nil, err
 	}
@@ -211,6 +228,33 @@ func clientQueryResults(rows *sql.Rows) (*Client, error) {
 
 	//logDebug(log, fmt.Sprintf("found %d object(s)", count))
 	return &results, nil
+}
+
+func bagsQueryResults(rows *sql.Rows) ([]Bag, error) {
+	results := make([]Bag, 0)
+	count := 0
+
+	for rows.Next() {
+		bag := Bag{}
+		err := rows.Scan(&bag.Name, &bag.Identifier, &bag.Submission, &bag.Created)
+		if err != nil {
+			return nil, err
+		}
+
+		results = append(results, bag)
+		count++
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// check for not found
+	if count == 0 {
+		return nil, fmt.Errorf("%q: %w", "object(s) not found", ErrBagNotFound)
+	}
+
+	//logDebug(log, fmt.Sprintf("found %d object(s)", count))
+	return results, nil
 }
 
 func execPrepared(stmt *sql.Stmt, values ...any) error {

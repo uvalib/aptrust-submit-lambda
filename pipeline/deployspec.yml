@@ -20,6 +20,9 @@ phases:
   build:
     commands:
       #
+      # apt-submit-bag-status function
+      #- aws lambda update-function-code --function-name uva-apt-submit-bag-status-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-bag-status/deployment.zip
+      #
       # apt-submit-event-audit function
       - aws lambda update-function-code --function-name uva-apt-submit-event-audit-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-event-audit/deployment.zip
       #

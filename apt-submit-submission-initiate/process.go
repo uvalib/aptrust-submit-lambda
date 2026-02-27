@@ -73,7 +73,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	defer dao.Close()
 
 	// get the client details
-	_, err = dao.GetClient(cid)
+	_, err = dao.GetClientByIdentifier(cid)
 	if err != nil {
 		if errors.Is(err, ErrClientNotFound) {
 			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusForbidden}, err
@@ -82,7 +82,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// get the submission
-	_, err = dao.GetSubmission(sid)
+	_, err = dao.GetSubmissionByIdentifier(sid)
 	if err != nil {
 		if errors.Is(err, ErrSubmissionNotFound) {
 			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, err

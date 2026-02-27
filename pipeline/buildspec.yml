@@ -24,6 +24,10 @@ phases:
       #
       # build the assets
       #
+      # apt-submit-bag-status function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-bag-status
+      - make linux
+      #
       # apt-submit-event-audit function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-event-audit
       - make linux
@@ -45,6 +49,9 @@ phases:
       - make linux
       #
       # copy to the results bucket
+      #
+      # apt-submit-bag-status function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-bag-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-bag-status/deployment.zip --quiet
       #
       # apt-submit-event-audit function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-event-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-event-audit/deployment.zip --quiet

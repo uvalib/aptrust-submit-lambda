@@ -58,7 +58,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	defer dao.Close()
 
 	// get the client details
-	c, err := dao.GetClient(cid)
+	c, err := dao.GetClientByIdentifier(cid)
 	if err != nil {
 		if errors.Is(err, ErrClientNotFound) {
 			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusForbidden}, err
@@ -67,7 +67,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// create the new submission
-	s, err := dao.CreateSubmission(c.Identifier)
+	s, err := dao.CreateNewSubmission(c.Identifier)
 	if err != nil {
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
 	}

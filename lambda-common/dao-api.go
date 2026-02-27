@@ -18,7 +18,20 @@ type Submission struct {
 	Created    time.Time `json:"created"`    // created time
 }
 
+type Bag struct {
+	Name       string    `json:"name"`       // bag name
+	Identifier string    `json:"identifier"` // bag identifier
+	Submission string    `json:"submission"` // owning submission
+	Created    time.Time `json:"created"`    // created time
+}
+
 type SubmissionStatus struct {
+	Identifier string    `json:"identifier"` // submission identifier
+	Status     string    `json:"status"`     // current status
+	Updated    time.Time `json:"updated"`    // created time
+}
+
+type BagStatus struct {
 	Identifier string    `json:"identifier"` // submission identifier
 	Status     string    `json:"status"`     // current status
 	Updated    time.Time `json:"updated"`    // created time
