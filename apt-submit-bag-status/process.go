@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {
@@ -25,13 +26,19 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// cleanup on exit
 	defer dao.Close()
 
-	// get the client details
-	_, err = dao.GetBagsByStatus(BagStatusPendingIngest)
+	// get the bags
+	bags, err := dao.GetBagsByStatus(BagStatusPendingIngest)
 	if err != nil {
 		return err
 	}
 
-	// do more stuff
+	if len(bags) != 0 {
+		for _, b := range bags {
+			fmt.Printf("DEBUG: checking APT for ingest status of '%s' (%s))\n", b.Name, b.Identifier)
+		}
+	} else {
+		fmt.Printf("INFO: no bags in '%s' status)\n", BagStatusPendingIngest)
+	}
 
 	return nil
 }
