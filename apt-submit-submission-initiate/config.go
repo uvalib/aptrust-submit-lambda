@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Config defines all of the service configuration parameters
+// Config defines all the service configuration parameters
 type Config struct {
 	// database configuration
 	DbHost     string // database host

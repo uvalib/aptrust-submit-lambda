@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Config defines all of the service configuration parameters
+// Config defines all the service configuration parameters
 type Config struct {
 	BusName    string // message bus name
 	SourceName string // message source name
