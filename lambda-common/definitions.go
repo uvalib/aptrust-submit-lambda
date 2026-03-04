@@ -31,7 +31,7 @@ var bagStatusComplete = "complete"
 
 // other definitions
 var tempFilesystem = "/tmp"
-var manifestName = "manifest-md5.txt"
+var manifestName = "manifest-sha256.txt"
 
 //
 // end of file

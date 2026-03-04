@@ -108,36 +108,59 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	submissionKeyPrefix := fmt.Sprintf("%s/%s", cli.Name, sub.Identifier)
 
 	// get a complete list of all the files included in the specified submission
-	_, err = s3Client.s3List(cfg.InboundBucket, submissionKeyPrefix)
+	suppliedFiles, err := s3Client.s3List(cfg.InboundBucket, submissionKeyPrefix)
 	if err != nil {
 		fmt.Printf("ERROR: listing submission assets (%s)\n", err.Error())
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// get all the bags included in the submission
-	//bagList := findBags(submissionKeyPrefix, suppliedFiles)
-	//if len(bagList) == 0 {
-	// no bags in the submission
-	//}
+	bagList := findIncludedBags(submissionKeyPrefix, suppliedFiles)
+	if len(bagList) == 0 {
+		err = fmt.Errorf("no bags included in the submission")
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
+	}
 
-	// validate with supplied list
+	// ensure the bags specified in the request are the same as the ones located
+	if areIdentical(bagList, r.BagFolders) == false {
+		err = fmt.Errorf("bag list does not match submission")
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
+	}
 
-	// find all the items enumerated in the manifests
-	//itemizedFiles := xxx(manifests)
+	// get an enumeration of all the files specified in the manifests
+	itemizedFiles := make([]ManifestRow, 0)
+	for _, bag := range bagList {
+		rows, err := manifestContents(s3Client, cfg.InboundBucket, submissionKeyPrefix, bag)
+		if err != nil {
+			err = fmt.Errorf("manifest %s/%s bad or missing", bag, manifestName)
+			return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
+		}
+		itemizedFiles = append(itemizedFiles, rows...)
+	}
 
-	//if len(itemizedFiles)+len(manifests) != len(suppliedFiles) {
-	// manifests enumerate different files than those supplied
-	//}
+	// our enumerated files and the supplied list should be the same size
+	if len(itemizedFiles)+len(bagList) != len(suppliedFiles) {
+		err = fmt.Errorf("manifests do not match submission")
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
+	}
+
+	// FIXME
+	// ensure the enumerated list matches the provided list
+	//
 
 	// create the bags
-	//err = createBags(dao, bagList, cid, sid)
-	//if err != nil {
-	//}
+	err = createDBBags(dao, bagList, sid)
+	if err != nil {
+		fmt.Printf("ERROR: creating bags (%s)\n", err.Error())
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
 
 	// create the files
-	//err = createFiles(dao, itemizedFiles, cid, sid)
-	//if err != nil {
-	//}
+	err = createDBFiles(dao, itemizedFiles, sid)
+	if err != nil {
+		fmt.Printf("ERROR: creating files (%s)\n", err.Error())
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
 
 	// construct the response
 	response := Response{}
