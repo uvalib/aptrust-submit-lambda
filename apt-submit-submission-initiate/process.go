@@ -46,7 +46,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// ensure we have the parameters we need
 	if len(cid) == 0 || len(sid) == 0 {
 		err := fmt.Errorf("missing required query params: [cid, sid]")
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusBadRequest}, err
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
 	fmt.Printf("DEBUG: request [%s]\n", request.Body)
@@ -54,43 +54,89 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	err := json.Unmarshal([]byte(request.Body), &r)
 	if err != nil {
 		fmt.Printf("ERROR: json.Unmarshal() failed (%s)\n", err.Error())
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
+
+	// just to make sure...
+	if len(r.BagFolders) == 0 {
+		err := fmt.Errorf("no bags specified in request body")
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
 	// load configuration
 	cfg, err := loadConfiguration()
 	if err != nil {
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// create the data access object
 	dao, err := newDao(cfg)
 	if err != nil {
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// cleanup on exit
 	defer dao.Close()
 
 	// get the client details
-	_, err = dao.GetClientByIdentifier(cid)
+	cli, err := dao.GetClientByIdentifier(cid)
 	if err != nil {
 		if errors.Is(err, ErrClientNotFound) {
-			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusForbidden}, err
+			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 		}
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// get the submission
-	_, err = dao.GetSubmissionByIdentifier(sid)
+	sub, err := dao.GetSubmissionByIdentifier(sid)
 	if err != nil {
 		if errors.Is(err, ErrSubmissionNotFound) {
-			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, err
+			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 		}
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
-	// do more stuff
+	// create our s3 helper client
+	s3Client, err := newS3Client()
+	if err != nil {
+		fmt.Printf("ERROR: creating s3 client (%s)\n", err.Error())
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
+
+	// S3 assets in <bucket>/<clientId>/<submissionId>/...
+	submissionKeyPrefix := fmt.Sprintf("%s/%s", cli.Name, sub.Identifier)
+
+	// get a complete list of all the files included in the specified submission
+	_, err = s3Client.s3List(cfg.InboundBucket, submissionKeyPrefix)
+	if err != nil {
+		fmt.Printf("ERROR: listing submission assets (%s)\n", err.Error())
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
+
+	// get all the bags included in the submission
+	//bagList := findBags(submissionKeyPrefix, suppliedFiles)
+	//if len(bagList) == 0 {
+	// no bags in the submission
+	//}
+
+	// validate with supplied list
+
+	// find all the items enumerated in the manifests
+	//itemizedFiles := xxx(manifests)
+
+	//if len(itemizedFiles)+len(manifests) != len(suppliedFiles) {
+	// manifests enumerate different files than those supplied
+	//}
+
+	// create the bags
+	//err = createBags(dao, bagList, cid, sid)
+	//if err != nil {
+	//}
+
+	// create the files
+	//err = createFiles(dao, itemizedFiles, cid, sid)
+	//if err != nil {
+	//}
 
 	// construct the response
 	response := Response{}
@@ -99,8 +145,11 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	buf, err := json.Marshal(response)
 	if err != nil {
 		fmt.Printf("ERROR: json.Marshal() failed (%s)\n", err.Error())
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
+
+	// publish event
+
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil
 }

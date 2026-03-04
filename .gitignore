@@ -17,6 +17,7 @@ main-cmdline.go
 main-lambda-apigw.go
 main-lambda-eb.go
 main-lambda-sqs.go
+s3.go
 
 # dont ignore common directory
 !lambda-common/*.go

@@ -6,7 +6,10 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
-	// database configuration
+	// ingest details
+	InboundBucket string
+
+	// database details
 	DbHost     string // database host
 	DbPort     int    // database port
 	DbName     string // database name
@@ -21,6 +24,14 @@ func loadConfiguration() (*Config, error) {
 	var cfg Config
 
 	var err error
+
+	// ingest details
+	cfg.InboundBucket, err = ensureSetAndNonEmpty("INBOUND_BUCKET")
+	if err != nil {
+		return nil, err
+	}
+
+	// database details
 	cfg.DbHost, err = ensureSetAndNonEmpty("DB_HOST")
 	if err != nil {
 		return nil, err
@@ -42,11 +53,15 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
-	fmt.Printf("[conf] DbHost          = [%s]\n", cfg.DbHost)
-	fmt.Printf("[conf] DbPort          = [%d]\n", cfg.DbPort)
-	fmt.Printf("[conf] DbName          = [%s]\n", cfg.DbName)
-	fmt.Printf("[conf] DbUser          = [%s]\n", cfg.DbUser)
-	fmt.Printf("[conf] DbPassword      = [REDACTED]\n")
+	// ingest details
+	fmt.Printf("[CONFIG] InboundBucket = [%s]\n", cfg.InboundBucket)
+
+	// database details
+	fmt.Printf("[CONFIG] DbHost        = [%s]\n", cfg.DbHost)
+	fmt.Printf("[CONFIG] DbPort        = [%d]\n", cfg.DbPort)
+	fmt.Printf("[CONFIG] DbName        = [%s]\n", cfg.DbName)
+	fmt.Printf("[CONFIG] DbUser        = [%s]\n", cfg.DbUser)
+	fmt.Printf("[CONFIG] DbPassword    = [REDACTED]\n")
 
 	return &cfg, nil
 }

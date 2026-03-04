@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/uvalib/apts-bus-definitions/uvaaptsbus"
+	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 )
 
 func main() {
@@ -46,8 +46,8 @@ func main() {
 	ev.EventName = eventName
 	ev.EventTime = eventTime
 	ev.ClientId = clientId
-	ev.SubmissionId = submissionId
-	ev.BagId = bagId
+	//ev.SubmissionId = submissionId
+	//ev.BagId = bagId
 	if len(detail) != 0 {
 		ev.Detail = json.RawMessage(detail)
 	}

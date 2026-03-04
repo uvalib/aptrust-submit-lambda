@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/uvalib/apts-bus-definitions/uvaaptsbus"
+	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 )
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {

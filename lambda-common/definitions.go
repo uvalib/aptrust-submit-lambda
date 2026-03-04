@@ -29,6 +29,10 @@ var BagStatusPendingIngest = "pending-ingest"
 var BagStatusError = "error"
 var bagStatusComplete = "complete"
 
+// other definitions
+var tempFilesystem = "/tmp"
+var manifestName = "manifest-md5.txt"
+
 //
 // end of file
 //
