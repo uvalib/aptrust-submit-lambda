@@ -11,6 +11,7 @@ env.set
 dao.go
 dao-api.go
 env.go
+helpers.go
 definitions.go
 main-cmdline.go
 main-lambda-apigw.go

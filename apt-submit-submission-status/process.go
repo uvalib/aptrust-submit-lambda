@@ -42,19 +42,19 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// ensure we have the parameters we need
 	if len(sid) == 0 {
 		err := fmt.Errorf("missing required query params: [sid]")
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusBadRequest}, err
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
 	// load configuration
 	cfg, err := loadConfiguration()
 	if err != nil {
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// create the data access object
 	dao, err := newDao(cfg)
 	if err != nil {
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// cleanup on exit
@@ -64,9 +64,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	s, err := dao.GetSubmissionStatusByIdentifier(sid)
 	if err != nil {
 		if errors.Is(err, ErrSubmissionNotFound) {
-			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, err
+			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 		}
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// construct the response
@@ -78,7 +78,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	buf, err := json.Marshal(response)
 	if err != nil {
 		fmt.Printf("ERROR: json.Marshal() failed (%s)\n", err.Error())
-		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusInternalServerError}, err
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil
