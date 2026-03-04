@@ -7,8 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.11
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.5
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.96.3
-	github.com/lib/pq v1.11.2
-	github.com/rs/xid v1.6.0
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260304154525-f1a48a5cccce
 )
 
 require (
@@ -29,4 +28,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.8 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
+	github.com/lib/pq v1.11.2 // indirect
+	github.com/rs/xid v1.6.0 // indirect
 )

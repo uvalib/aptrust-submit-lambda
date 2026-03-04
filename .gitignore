@@ -8,8 +8,6 @@ env.set
 /tmp
 
 # ignore common/shared files
-dao.go
-dao-api.go
 env.go
 helpers.go
 definitions.go

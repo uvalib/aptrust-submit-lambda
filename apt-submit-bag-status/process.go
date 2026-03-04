@@ -7,6 +7,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {
@@ -18,7 +20,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	}
 
 	// create the data access object
-	dao, err := newDao(cfg)
+	dao, err := uvaaptsdao.NewDao(cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbName)
 	if err != nil {
 		return err
 	}

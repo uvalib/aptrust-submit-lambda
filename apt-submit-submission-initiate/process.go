@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
 type Request struct {
@@ -70,7 +71,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// create the data access object
-	dao, err := newDao(cfg)
+	dao, err := uvaaptsdao.NewDao(cfg.DbHost, cfg.DbPort, cfg.DbUser, cfg.DbPassword, cfg.DbName)
 	if err != nil {
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
