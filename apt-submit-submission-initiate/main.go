@@ -37,7 +37,7 @@ func main() {
 	req.QueryStringParameters["cid"] = clientId
 	req.QueryStringParameters["sid"] = submissionId
 
-	req.Body = "{\"bag_folders\":[\"LibraETD-kh04dr429\", \"LibraETD-pr76f4918\"]}"
+	req.Body = "{\"bag_folders\":[\"LibraETD-7d278v497\", \"LibraETD-n009w3930\", \"LibraETD-z890rv91v\"]}"
 
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {

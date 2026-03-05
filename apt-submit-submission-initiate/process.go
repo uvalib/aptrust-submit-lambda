@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
@@ -148,6 +149,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// ensure the enumerated list matches the provided list
 	//
 
+	// create our event bus client
+	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
+
 	// create the bags
 	err = createDBBags(dao, bagList, sid)
 	if err != nil {
@@ -164,7 +168,6 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// construct the response
 	response := Response{}
-	//response.Sid = "sid-xx-example-xx"
 
 	buf, err := json.Marshal(response)
 	if err != nil {
@@ -172,7 +175,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
-	// publish event
+	// we are done, publish the appropriate event and terminate
+	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Name, sid, "")
 
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil

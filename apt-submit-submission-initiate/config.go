@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 // Config defines all the service configuration parameters
 type Config struct {
 	// ingest details
 	InboundBucket string
+
+	// event bus definitions
+	BusName        string // the event bus name
+	BusEventSource string // the source of published events
 
 	// database details
 	DbHost     string // database host
@@ -30,6 +35,10 @@ func loadConfiguration() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// event bus definitions
+	cfg.BusName = envWithDefault("EVENT_BUS_NAME", "")
+	cfg.BusEventSource = envWithDefault("EVENT_SRC_NAME", "")
 
 	// database details
 	cfg.DbHost, err = ensureSetAndNonEmpty("DB_HOST")
@@ -54,14 +63,18 @@ func loadConfiguration() (*Config, error) {
 	}
 
 	// ingest details
-	fmt.Printf("[CONFIG] InboundBucket = [%s]\n", cfg.InboundBucket)
+	fmt.Printf("[CONFIG] InboundBucket  = [%s]\n", cfg.InboundBucket)
+
+	// event bus definitions
+	log.Printf("[CONFIG] BusName        = [%s]", cfg.BusName)
+	log.Printf("[CONFIG] BusEventSource = [%s]", cfg.BusEventSource)
 
 	// database details
-	fmt.Printf("[CONFIG] DbHost        = [%s]\n", cfg.DbHost)
-	fmt.Printf("[CONFIG] DbPort        = [%d]\n", cfg.DbPort)
-	fmt.Printf("[CONFIG] DbName        = [%s]\n", cfg.DbName)
-	fmt.Printf("[CONFIG] DbUser        = [%s]\n", cfg.DbUser)
-	fmt.Printf("[CONFIG] DbPassword    = [REDACTED]\n")
+	fmt.Printf("[CONFIG] DbHost         = [%s]\n", cfg.DbHost)
+	fmt.Printf("[CONFIG] DbPort         = [%d]\n", cfg.DbPort)
+	fmt.Printf("[CONFIG] DbName         = [%s]\n", cfg.DbName)
+	fmt.Printf("[CONFIG] DbUser         = [%s]\n", cfg.DbUser)
+	fmt.Printf("[CONFIG] DbPassword     = [REDACTED]\n")
 
 	return &cfg, nil
 }

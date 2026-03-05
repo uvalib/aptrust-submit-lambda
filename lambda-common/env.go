@@ -6,9 +6,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
+
+func envWithDefault(env string, defaultValue string) string {
+	val, set := os.LookupEnv(env)
+
+	if set == false {
+		log.Printf("INFO: environment variable not set: [%s] using default value [%s]", env, defaultValue)
+		return defaultValue
+	}
+
+	return val
+}
 
 func ensureSet(env string) (string, error) {
 	val, set := os.LookupEnv(env)
