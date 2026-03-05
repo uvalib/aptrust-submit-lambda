@@ -31,7 +31,7 @@ func manifestContents(s3client *uvaS3Client, bucket string, prefix string, bagNa
 	}
 
 	//
-	// manifests are a hash followed by a space followed by a filename (which could contain spaces)
+	// manifests are a hash followed by two spaces followed by a filename (which could contain spaces)
 	//
 
 	results := make([]ManifestRow, 0)
@@ -41,7 +41,9 @@ func manifestContents(s3client *uvaS3Client, bucket string, prefix string, bagNa
 		}
 		subs := strings.SplitN(line, " ", 2)
 		if len(subs) == 2 {
-			ml := ManifestRow{hash: subs[0], file: subs[1], bag: bagName}
+			hash := strings.TrimSpace(subs[0])
+			name := strings.TrimSpace(subs[1])
+			ml := ManifestRow{hash: hash, file: name, bag: bagName}
 			results = append(results, ml)
 		}
 	}
