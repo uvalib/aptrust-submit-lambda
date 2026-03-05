@@ -72,7 +72,7 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 		}
 
 		for _, o := range page.Contents {
-			log.Printf("DEBUG: found [%s]", *o.Key)
+			//log.Printf("DEBUG: found [%s]", *o.Key)
 			result = append(result, *o.Key)
 		}
 	}
