@@ -36,7 +36,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 	if len(bags) != 0 {
 		for _, b := range bags {
-			fmt.Printf("DEBUG: checking APT for ingest status of '%s' (%s))\n", b.Name, b.Identifier)
+			fmt.Printf("DEBUG: checking APT for ingest status of '%s'\n", b.Name)
 		}
 	} else {
 		fmt.Printf("INFO: no bags in '%s' status)\n", BagStatusPendingIngest)

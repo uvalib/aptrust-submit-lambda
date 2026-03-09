@@ -42,7 +42,7 @@ github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
 github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260304150609-89898174d1c4 h1:CtovZAdi8lkjTBQpAObrPI5gVQmmfiBp1j42a+aFRtY=
 github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260304150609-89898174d1c4/go.mod h1:7R2aqbx1YWfJhh3xWuAMvs2YLO2OcZGUmLsqbHMlp4Y=
-github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260304154525-f1a48a5cccce h1:QrUbGOFk5XvrRJV2uGUkASpFKBuVjhAtjS+HCWE/cYM=
-github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260304154525-f1a48a5cccce/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260304194221-8f14cd5aa956 h1:1GXdFvZH1oa/3hXXYp/xaHt9PflajZIYn6RWubNCJfY=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260304194221-8f14cd5aa956/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
