@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 type uvaS3Client struct {
@@ -84,17 +85,33 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 
 func (c *uvaS3Client) s3Exists(bucket string, key string) bool {
 
-	//logDebug(s.log, fmt.Sprintf("head [%s/%s]", bucket, key))
-	//start := time.Now()
+	log.Printf("head [%s/%s]", bucket, key)
+	start := time.Now()
 
 	_, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
 		Bucket: &bucket,
 		Key:    &key,
 	})
 
-	//duration := time.Since(start)
-	//logDebug(s.log, fmt.Sprintf("head [%s/%s] complete in %0.2f seconds (%s)", bucket, key, duration.Seconds(), s.statusText(err)))
+	duration := time.Since(start)
+	log.Printf("head [%s/%s] complete in %0.2f seconds (%s)", bucket, key, duration.Seconds(), c.statusText(err))
 	return err == nil
+}
+
+func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types.ObjectAttributes) (s3.GetObjectAttributesOutput, error) {
+
+	log.Printf("get attribs [%s/%s]", bucket, key)
+	start := time.Now()
+
+	res, err := c.client.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
+		Bucket:           &bucket,
+		Key:              &key,
+		ObjectAttributes: attribs,
+	})
+
+	duration := time.Since(start)
+	log.Printf("get attribs [%s/%s] complete in %0.2f seconds (%s)", bucket, key, duration.Seconds(), c.statusText(err))
+	return *res, nil
 }
 
 func (c *uvaS3Client) s3Put(bucket string, key string, location string) error {
@@ -156,9 +173,9 @@ func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 		Key:    &key,
 	})
 
-	if err != nil {
-		return err
-	}
+	//	if err != nil {
+	//		return err
+	//	}
 
 	//	// I think there are times when the download runs out of space but it is not reported as an error so
 	//	// we validate the expected file size against the actually downloaded size
@@ -170,8 +187,15 @@ func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 	//}
 
 	duration := time.Since(start)
-	log.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec)", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds())
+	log.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
 	return nil
+}
+
+func (s *uvaS3Client) statusText(err error) string {
+	if err == nil {
+		return "ok"
+	}
+	return "ERR"
 }
 
 //
