@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 )
@@ -15,7 +14,7 @@ func envWithDefault(env string, defaultValue string) string {
 	val, set := os.LookupEnv(env)
 
 	if set == false {
-		log.Printf("INFO: environment variable not set: [%s] using default value [%s]", env, defaultValue)
+		fmt.Printf("INFO: environment variable not set: [%s] using default value [%s]\n", env, defaultValue)
 		return defaultValue
 	}
 

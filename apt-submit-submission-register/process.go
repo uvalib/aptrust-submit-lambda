@@ -15,8 +15,9 @@ import (
 )
 
 type Response struct {
-	Sid string `json:"sid"`
-	// other stuff
+	SubmissionIdentifier string `json:"sid"`
+	DepositBucket        string `json:"bucket"`
+	DepositPath          string `json:"path"`
 }
 
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -75,7 +76,10 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// construct the response
 	response := Response{}
-	response.Sid = s.Identifier
+	response.SubmissionIdentifier = s.Identifier
+	response.DepositBucket = "xxx"
+	// S3 assets in <bucket>/<clientId>/<submissionId>/...
+	response.DepositPath = fmt.Sprintf("%s/%s", cid, s.Identifier)
 
 	buf, err := json.Marshal(response)
 	if err != nil {

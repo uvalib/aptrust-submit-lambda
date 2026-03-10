@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
@@ -10,7 +11,7 @@ import (
 func NewEventBus(eventBus string, eventSource string) (uvaaptsbus.UvaBus, error) {
 	// we will accept bad config and return nil quietly
 	if len(eventBus) == 0 {
-		log.Printf("INFO: Event bus is not configured, no telemetry emitted")
+		fmt.Printf("INFO: Event bus is not configured, no telemetry emitted\n")
 		return nil, uvaaptsbus.ErrConfig
 	}
 

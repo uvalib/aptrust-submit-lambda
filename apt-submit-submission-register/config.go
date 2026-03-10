@@ -6,6 +6,13 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
+	// ingest details
+	InboundBucket string
+
+	// event bus definitions
+	BusName        string // the event bus name
+	BusEventSource string // the source of published events
+
 	// database configuration
 	DbHost     string // database host
 	DbPort     int    // database port
@@ -19,8 +26,17 @@ type Config struct {
 func loadConfiguration() (*Config, error) {
 
 	var cfg Config
-
 	var err error
+
+	cfg.InboundBucket, err = ensureSetAndNonEmpty("INBOUND_BUCKET")
+	if err != nil {
+		return nil, err
+	}
+
+	// event bus definitions
+	cfg.BusName = envWithDefault("EVENT_BUS_NAME", "")
+	cfg.BusEventSource = envWithDefault("EVENT_SRC_NAME", "")
+
 	cfg.DbHost, err = ensureSetAndNonEmpty("DB_HOST")
 	if err != nil {
 		return nil, err
@@ -42,6 +58,14 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
+	// ingest details
+	fmt.Printf("[CONFIG] InboundBucket  = [%s]\n", cfg.InboundBucket)
+
+	// event bus definitions
+	fmt.Printf("[CONFIG] BusName        = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] BusEventSource = [%s]\n", cfg.BusEventSource)
+
+	// database details
 	fmt.Printf("[CONFIG] DbHost          = [%s]\n", cfg.DbHost)
 	fmt.Printf("[CONFIG] DbPort          = [%d]\n", cfg.DbPort)
 	fmt.Printf("[CONFIG] DbName          = [%s]\n", cfg.DbName)

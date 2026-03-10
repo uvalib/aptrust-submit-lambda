@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 )
 
 // Config defines all the service configuration parameters
@@ -27,7 +26,6 @@ type Config struct {
 func loadConfiguration() (*Config, error) {
 
 	var cfg Config
-
 	var err error
 
 	// ingest details
@@ -66,8 +64,8 @@ func loadConfiguration() (*Config, error) {
 	fmt.Printf("[CONFIG] InboundBucket  = [%s]\n", cfg.InboundBucket)
 
 	// event bus definitions
-	log.Printf("[CONFIG] BusName        = [%s]", cfg.BusName)
-	log.Printf("[CONFIG] BusEventSource = [%s]", cfg.BusEventSource)
+	fmt.Printf("[CONFIG] BusName        = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] BusEventSource = [%s]\n", cfg.BusEventSource)
 
 	// database details
 	fmt.Printf("[CONFIG] DbHost         = [%s]\n", cfg.DbHost)

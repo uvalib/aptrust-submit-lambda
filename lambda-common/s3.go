@@ -45,7 +45,7 @@ func newS3Client() (*uvaS3Client, error) {
 
 func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 
-	log.Printf("INFO: s3 list [%s/%s]", bucket, key)
+	fmt.Printf("INFO: s3 list [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	// query parameters
@@ -73,19 +73,19 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 		}
 
 		for _, o := range page.Contents {
-			//log.Printf("DEBUG: found [%s]", *o.Key)
+			//fmt.Printf("DEBUG: found [%s]\n", *o.Key)
 			result = append(result, *o.Key)
 		}
 	}
 
 	duration := time.Since(start)
-	log.Printf("INFO: s3 list [%s/%s] complete in %0.2f seconds", bucket, key, duration.Seconds())
+	fmt.Printf("INFO: s3 list [%s/%s] complete in %0.2f seconds\n", bucket, key, duration.Seconds())
 	return result, nil
 }
 
 func (c *uvaS3Client) s3Exists(bucket string, key string) bool {
 
-	log.Printf("head [%s/%s]", bucket, key)
+	fmt.Printf("head [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	_, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
@@ -94,13 +94,13 @@ func (c *uvaS3Client) s3Exists(bucket string, key string) bool {
 	})
 
 	duration := time.Since(start)
-	log.Printf("head [%s/%s] complete in %0.2f seconds (%s)", bucket, key, duration.Seconds(), c.statusText(err))
+	fmt.Printf("head [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
 	return err == nil
 }
 
 func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types.ObjectAttributes) (s3.GetObjectAttributesOutput, error) {
 
-	log.Printf("get attribs [%s/%s]", bucket, key)
+	fmt.Printf("get attribs [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	res, err := c.client.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
@@ -110,7 +110,7 @@ func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types
 	})
 
 	duration := time.Since(start)
-	log.Printf("get attribs [%s/%s] complete in %0.2f seconds (%s)", bucket, key, duration.Seconds(), c.statusText(err))
+	fmt.Printf("get attribs [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
 	return *res, nil
 }
 
@@ -159,7 +159,7 @@ func (c *uvaS3Client) s3Put(bucket string, key string, location string) error {
 func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 
 	source := fmt.Sprintf("s3://%s/%s", bucket, key)
-	log.Printf("INFO: getting %s to %s", source, location)
+	fmt.Printf("INFO: getting %s to %s\n", source, location)
 
 	file, err := os.OpenFile(location, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
@@ -187,7 +187,7 @@ func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 	//}
 
 	duration := time.Since(start)
-	log.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
+	fmt.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)\n", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
 	return nil
 }
 

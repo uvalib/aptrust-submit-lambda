@@ -106,7 +106,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// S3 assets in <bucket>/<clientId>/<submissionId>/...
-	submissionKeyPrefix := fmt.Sprintf("%s/%s", cli.Name, sub.Identifier)
+	submissionKeyPrefix := fmt.Sprintf("%s/%s", cli.Identifier, sub.Identifier)
 
 	// get a complete list of all the files included in the specified submission
 	suppliedFiles, err := s3Client.s3List(cfg.InboundBucket, submissionKeyPrefix)
@@ -176,7 +176,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// we are done, publish the appropriate event and terminate
-	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Name, sid, "")
+	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, sid, "")
 
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil
