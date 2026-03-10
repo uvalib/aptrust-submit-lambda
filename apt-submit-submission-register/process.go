@@ -77,7 +77,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// construct the response
 	response := Response{}
 	response.SubmissionIdentifier = s.Identifier
-	response.DepositBucket = "xxx"
+	response.DepositBucket = cfg.InboundBucket
 	// S3 assets in <bucket>/<clientId>/<submissionId>/...
 	response.DepositPath = fmt.Sprintf("%s/%s", cid, s.Identifier)
 
