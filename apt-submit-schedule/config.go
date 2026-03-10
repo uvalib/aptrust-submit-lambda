@@ -27,8 +27,8 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
-	fmt.Printf("[conf] BusName    = [%s]\n", cfg.BusName)
-	fmt.Printf("[conf] SourceName = [%s]\n", cfg.SourceName)
+	fmt.Printf("[CONFIG] BusName    = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] SourceName = [%s]\n", cfg.SourceName)
 
 	return &cfg, nil
 }

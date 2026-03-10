@@ -42,11 +42,11 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
-	fmt.Printf("[conf] DbHost          = [%s]\n", cfg.DbHost)
-	fmt.Printf("[conf] DbPort          = [%d]\n", cfg.DbPort)
-	fmt.Printf("[conf] DbName          = [%s]\n", cfg.DbName)
-	fmt.Printf("[conf] DbUser          = [%s]\n", cfg.DbUser)
-	fmt.Printf("[conf] DbPassword      = [REDACTED]\n")
+	fmt.Printf("[CONFIG] DbHost          = [%s]\n", cfg.DbHost)
+	fmt.Printf("[CONFIG] DbPort          = [%d]\n", cfg.DbPort)
+	fmt.Printf("[CONFIG] DbName          = [%s]\n", cfg.DbName)
+	fmt.Printf("[CONFIG] DbUser          = [%s]\n", cfg.DbUser)
+	fmt.Printf("[CONFIG] DbPassword      = [REDACTED]\n")
 
 	return &cfg, nil
 }
