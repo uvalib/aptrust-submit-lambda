@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
@@ -31,6 +32,10 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// get the bags
 	bags, err := dao.GetBagsByStatus(BagStatusPendingIngest)
 	if err != nil {
+		if errors.Is(err, ErrBagNotFound) {
+			fmt.Printf("INFO: no bags in '%s' status)\n", BagStatusPendingIngest)
+			return nil
+		}
 		return err
 	}
 
@@ -38,8 +43,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		for _, b := range bags {
 			fmt.Printf("DEBUG: checking APT for ingest status of '%s'\n", b.Name)
 		}
-	} else {
-		fmt.Printf("INFO: no bags in '%s' status)\n", BagStatusPendingIngest)
 	}
 
 	return nil
