@@ -61,7 +61,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the client details
 	c, err := dao.GetClientByIdentifier(cid)
 	if err != nil {
-		if errors.Is(err, ErrClientNotFound) {
+		if errors.As(err, &ErrClientNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)

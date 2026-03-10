@@ -32,8 +32,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// get the bags
 	bags, err := dao.GetBagsByStatus(BagStatusPendingIngest)
 	if err != nil {
-		if errors.Is(err, ErrBagNotFound) {
-			fmt.Printf("INFO: no bags in '%s' status)\n", BagStatusPendingIngest)
+		if errors.As(err, &ErrBagNotFound) {
+			fmt.Printf("INFO: no bags in '%s' status\n", BagStatusPendingIngest)
 			return nil
 		}
 		return err
