@@ -5,18 +5,10 @@
 package main
 
 import (
-	//"bytes"
 	"context"
 	"fmt"
-
-	//"fmt"
-	"log"
-	//"strings"
-	"time"
-
-	//"fmt"
 	"os"
-	//"time"
+	"time"
 
 	//"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
