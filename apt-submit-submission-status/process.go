@@ -65,7 +65,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	s, err := dao.GetSubmissionByIdentifier(sid)
 	if err != nil {
 		if errors.As(err, &ErrSubmissionNotFound) {
-			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
+			//return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
