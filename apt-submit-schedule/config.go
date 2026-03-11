@@ -6,8 +6,8 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
-	BusName    string // message bus name
-	SourceName string // message source name
+	BusName        string // message bus name
+	BusEventSource string // message source name
 }
 
 // loadConfiguration will load the service configuration from env/cmdline
@@ -22,13 +22,13 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
-	cfg.SourceName, err = ensureSetAndNonEmpty("MESSAGE_SOURCE")
+	cfg.BusEventSource, err = ensureSetAndNonEmpty("MESSAGE_SOURCE")
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("[CONFIG] BusName    = [%s]\n", cfg.BusName)
-	fmt.Printf("[CONFIG] SourceName = [%s]\n", cfg.SourceName)
+	fmt.Printf("[CONFIG] BusName        = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] BusEventSource = [%s]\n", cfg.BusEventSource)
 
 	return &cfg, nil
 }

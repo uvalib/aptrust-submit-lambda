@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 )
 
@@ -21,7 +22,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	}
 
 	busCfg := uvaaptsbus.UvaBusConfig{
-		Source:  cfg.SourceName,
+		Source:  cfg.BusEventSource,
 		BusName: cfg.BusName,
 	}
 
@@ -31,7 +32,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		fmt.Printf("ERROR: creating event bus client (%s)\n", err.Error())
 		return err
 	}
-	fmt.Printf("Using: %s@%s\n", cfg.SourceName, cfg.BusName)
+	fmt.Printf("Using: %s@%s\n", cfg.BusEventSource, cfg.BusName)
 
 	// create event
 	ev := uvaaptsbus.UvaBusEvent{}
