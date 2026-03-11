@@ -24,6 +24,10 @@ phases:
       #
       # build the assets
       #
+      # apt-submit-approve function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-approve
+      - make linux
+      #
       # apt-submit-bag-status function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-bag-status
       - make linux
@@ -49,6 +53,9 @@ phases:
       - make linux
       #
       # copy to the results bucket
+      #
+      # apt-submit-approve function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-approve/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-approve/deployment.zip --quiet
       #
       # apt-submit-bag-status function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-bag-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-bag-status/deployment.zip --quiet
