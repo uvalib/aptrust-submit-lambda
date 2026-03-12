@@ -177,7 +177,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// we are done, publish the appropriate event and terminate
-	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, sid, "")
+	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, sid, "", "")
 
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil

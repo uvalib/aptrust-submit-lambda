@@ -2,10 +2,13 @@ module github.com/uvalib/apt-submit-approve
 
 go 1.26.1
 
+// for local development
+//replace github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao => ../../aptrust-submit-db-dao/uvaaptsdao
+
 require (
 	github.com/aws/aws-lambda-go v1.53.0
 	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260311131233-98a8b27a0f2d
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260309182453-229fc621ff6b
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260312173023-59a74a208f83
 )
 
 require (

@@ -25,11 +25,11 @@ func loadConfiguration() (*Config, error) {
 	var err error
 
 	// event bus definitions
-	cfg.BusName, err = ensureSetAndNonEmpty("MESSAGE_BUS")
+	cfg.BusName, err = ensureSetAndNonEmpty("EVENT_BUS_NAME")
 	if err != nil {
 		return nil, err
 	}
-	cfg.BusEventSource, err = ensureSetAndNonEmpty("MESSAGE_SOURCE")
+	cfg.BusEventSource, err = ensureSetAndNonEmpty("EVENT_SRC_NAME")
 	if err != nil {
 		return nil, err
 	}
