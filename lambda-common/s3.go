@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -75,19 +76,19 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 	return result, nil
 }
 
-func (c *uvaS3Client) s3Exists(bucket string, key string) bool {
+func (c *uvaS3Client) s3Head(bucket string, key string) (*s3.HeadObjectOutput, error) {
 
 	fmt.Printf("head [%s/%s]\n", bucket, key)
 	start := time.Now()
 
-	_, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+	res, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
 		Bucket: &bucket,
 		Key:    &key,
 	})
 
 	duration := time.Since(start)
 	fmt.Printf("head [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
-	return err == nil
+	return res, err
 }
 
 func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types.ObjectAttributes) (s3.GetObjectAttributesOutput, error) {
@@ -103,7 +104,7 @@ func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types
 
 	duration := time.Since(start)
 	fmt.Printf("get attribs [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
-	return *res, nil
+	return *res, err
 }
 
 func (c *uvaS3Client) s3Put(bucket string, key string, location string) error {
@@ -180,7 +181,7 @@ func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 
 	duration := time.Since(start)
 	fmt.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)\n", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
-	return nil
+	return err
 }
 
 func (s *uvaS3Client) statusText(err error) string {
