@@ -34,6 +34,8 @@ func main() {
 	req.QueryStringParameters = map[string]string{}
 	req.QueryStringParameters["cid"] = clientId
 
+	req.Body = "{\"collection\":\"collection name\",\"storage\":\"normal\"}"
+
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err.Error())

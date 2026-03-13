@@ -14,6 +14,11 @@ import (
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
+type Request struct {
+	Collection string `json:"collection"` // the collection name for the submission (optional)
+	Storage    string `json:"storage"`    // the APT storage to use for this submission (optional)
+}
+
 type Response struct {
 	SubmissionIdentifier string `json:"sid"`
 	DepositBucket        string `json:"bucket"`
@@ -43,6 +48,17 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		err := fmt.Errorf("missing required query params: [cid]")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
+
+	fmt.Printf("DEBUG: request [%s]\n", request.Body)
+	r := Request{}
+	err := json.Unmarshal([]byte(request.Body), &r)
+	if err != nil {
+		fmt.Printf("ERROR: json.Unmarshal() failed (%s)\n", err.Error())
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
+
+	// FIXME
+	fmt.Printf("DEBUG: collection [%s], storage [%s]\n", r.Collection, r.Storage)
 
 	// load configuration
 	cfg, err := loadConfiguration()
