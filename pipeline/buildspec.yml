@@ -40,6 +40,10 @@ phases:
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-schedule
       - make linux
       #
+      # apt-submit-state-manager function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-state-manager
+      - make linux
+      #
       # apt-submit-submission-initiate function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-submission-initiate
       - make linux
@@ -65,6 +69,9 @@ phases:
       #
       # apt-submit-schedule function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-schedule/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-schedule/deployment.zip --quiet
+      #
+      # apt-submit-state-manager function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-state-manager/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-state-manager/deployment.zip --quiet
       #
       # apt-submit-submission-initiate function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-submission-initiate/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-submission-initiate/deployment.zip --quiet
