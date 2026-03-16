@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 )
@@ -24,6 +25,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	busCfg := uvaaptsbus.UvaBusConfig{
 		Source:  cfg.BusEventSource,
 		BusName: cfg.BusName,
+		Log:     log.Default(),
 	}
 
 	// create message bus client
@@ -37,7 +39,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// create event
 	ev := uvaaptsbus.UvaBusEvent{}
 	ev.EventName = uvaaptsbus.EventScheduleCheckPending
-	ev.ClientId = "none"
+	//ev.ClientId = "none"
 	//ev.SubmissionId = "none"
 	//ev.BagId = "none"
 

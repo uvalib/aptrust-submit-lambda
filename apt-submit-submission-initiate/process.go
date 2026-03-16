@@ -16,7 +16,9 @@ import (
 )
 
 type Request struct {
-	BagFolders []string `json:"bag_folders"`
+	ClientIdentifier     string   `json:"cid"`         // the client identifier
+	SubmissionIdentifier string   `json:"sid"`         // the submission identifier
+	BagFolders           []string `json:"bag_folders"` // the bags to be included in this submission
 }
 
 type Response struct {
@@ -26,29 +28,23 @@ type Response struct {
 
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	var cid string
-	var sid string
+	//var cid string
+	//var sid string
 
 	// log inbound query parameters
-	for key, value := range request.QueryStringParameters {
-		fmt.Printf("DEBUG: query param [%s] = [%s]\n", key, value)
-		switch key {
-		case "cid":
-			cid = value
-		case "sid":
-			sid = value
-		}
-	}
+	//for key, value := range request.QueryStringParameters {
+	//	fmt.Printf("DEBUG: query param [%s] = [%s]\n", key, value)
+	//	switch key {
+	//	case "cid":
+	//cid = value
+	//	case "sid":
+	//sid = value
+	//	}
+	//}
 
 	// log inbound headers
 	for key, value := range request.Headers {
 		fmt.Printf("DEBUG: header [%s] = [%s]\n", key, value)
-	}
-
-	// ensure we have the parameters we need
-	if len(cid) == 0 || len(sid) == 0 {
-		err := fmt.Errorf("missing required query params: [cid, sid]")
-		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
 	fmt.Printf("DEBUG: request [%s]\n", request.Body)
@@ -59,9 +55,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
-	// just to make sure...
-	if len(r.BagFolders) == 0 {
-		err := fmt.Errorf("no bags specified in request body")
+	// ensure we have the parameters we need
+	if len(r.ClientIdentifier) == 0 || len(r.SubmissionIdentifier) == 0 || len(r.BagFolders) == 0 {
+		err := fmt.Errorf("one or more missing required params: [cid, sid, bag_folders]")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
@@ -81,7 +77,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	defer dao.Close()
 
 	// get the client details
-	cli, err := dao.GetClientByIdentifier(cid)
+	cli, err := dao.GetClientByIdentifier(r.ClientIdentifier)
 	if err != nil {
 		if errors.As(err, &ErrClientNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
@@ -90,13 +86,20 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// get the submission
-	sub, err := dao.GetSubmissionByIdentifier(sid)
+	sub, err := dao.GetSubmissionByIdentifier(r.SubmissionIdentifier)
 	if err != nil {
 		if errors.As(err, &ErrSubmissionNotFound) {
 			//return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
+
+	// ensure this submission belongs to this client
+	if sub.Client != cli.Identifier {
+		fmt.Printf("ERROR: client does not match submission identifier\n")
+		err = fmt.Errorf("client does not match submission identifier")
+		return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 	}
 
 	// create our s3 helper client
@@ -154,14 +157,14 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
 
 	// create the bags
-	err = createDBBags(dao, bagList, sid)
+	err = createDBBags(dao, bagList, r.SubmissionIdentifier)
 	if err != nil {
 		fmt.Printf("ERROR: creating bags (%s)\n", err.Error())
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
 	// create the files
-	err = createDBFiles(dao, itemizedFiles, sid)
+	err = createDBFiles(dao, itemizedFiles, r.SubmissionIdentifier)
 	if err != nil {
 		fmt.Printf("ERROR: creating files (%s)\n", err.Error())
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
@@ -177,7 +180,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	}
 
 	// we are done, publish the appropriate event and terminate
-	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, sid, "", "")
+	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, r.SubmissionIdentifier, "", "")
 
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil

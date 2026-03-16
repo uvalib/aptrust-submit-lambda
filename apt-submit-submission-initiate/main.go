@@ -34,11 +34,11 @@ func main() {
 
 	req := events.APIGatewayProxyRequest{}
 	req.QueryStringParameters = map[string]string{}
-	req.QueryStringParameters["cid"] = clientId
-	req.QueryStringParameters["sid"] = submissionId
+	//req.QueryStringParameters["cid"] = clientId
+	//req.QueryStringParameters["sid"] = submissionId
 
-	//	req.Body = "{\"bag_folders\":[\"LibraETD-7d278v497\", \"LibraETD-n009w3930\", \"LibraETD-z890rv91v\"]}"
-	req.Body = "{\"bag_folders\":[\"LibraETD-ks65hd74b\"]}"
+	bag := "LibraETD-ks65hd74b"
+	req.Body = fmt.Sprintf("{\"cid\":\"%s\",\"sid\":\"%s\",\"bag_folders\":[\"%s\"]}", clientId, submissionId, bag)
 
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {

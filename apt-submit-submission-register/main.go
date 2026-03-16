@@ -32,9 +32,9 @@ func main() {
 
 	req := events.APIGatewayProxyRequest{}
 	req.QueryStringParameters = map[string]string{}
-	req.QueryStringParameters["cid"] = clientId
+	//req.QueryStringParameters["cid"] = clientId
 
-	req.Body = "{\"collection\":\"collection name\",\"storage\":\"normal\"}"
+	req.Body = fmt.Sprintf("{\"cid\":\"%s\"}", clientId)
 
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {

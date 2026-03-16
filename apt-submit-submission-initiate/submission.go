@@ -35,7 +35,7 @@ func createDBBags(dao *uvaaptsdao.Dao, bagList []string, sid string) error {
 
 	// create the bags
 	for _, bagName := range bagList {
-		err := dao.CreateNewBag(bagName, sid)
+		err := dao.AddBag(bagName, sid)
 		if err != nil {
 			return err
 		}
@@ -48,7 +48,7 @@ func createDBFiles(dao *uvaaptsdao.Dao, fileList []ManifestRow, sid string) erro
 
 	// create the files
 	for _, mr := range fileList {
-		err := dao.CreateNewFile(mr.file, mr.hash, sid, mr.bag)
+		err := dao.AddFile(mr.file, mr.hash, sid, mr.bag)
 		if err != nil {
 			return err
 		}
