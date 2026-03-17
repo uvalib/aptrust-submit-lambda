@@ -19,9 +19,11 @@ var SubmissionStatusPendingApproval = "pending-approval"
 var SubmissionStatusSubmitting = "submitting"
 var SubmissionStatusPendingIngest = "pending-ingest"
 var SubmissionStatusError = "error"
+var SubmissionStatusIncomplete = "incomplete"
 var SubmissionStatusComplete = "complete"
 
 // bag status definitions
+var BagStatusRegistered = "registered"
 var BagStatusBuilding = "building"
 var BagStatusReady = "ready"
 var BagStatusSubmitting = "submitting"

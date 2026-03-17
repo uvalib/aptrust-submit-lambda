@@ -23,7 +23,7 @@ func main() {
 	var clientId string
 	var submissionId string
 	var bagId string
-	//var detail string
+	var extra string
 	var eventTime string
 
 	flag.StringVar(&messageId, "messageid", "0-0-0-0", "Message identifier")
@@ -33,7 +33,7 @@ func main() {
 	flag.StringVar(&clientId, "cid", "", "The event client identifier (optional)")
 	flag.StringVar(&submissionId, "sid", "", "The event submission identifier (optional)")
 	flag.StringVar(&bagId, "bid", "", "The event bag identifier (optional)")
-	//flag.StringVar(&detail, "detail", "", "Event detail, usually json (optional)")
+	flag.StringVar(&extra, "extra", "", "The event 'extra' 'field (optional)")
 	flag.Parse()
 
 	if len(eventName) == 0 {
@@ -46,8 +46,8 @@ func main() {
 	ev.EventTime = eventTime
 	ev.ClientId = clientId
 
-	if len(submissionId) != 0 || len(bagId) != 0 {
-		wf := uvaaptsbus.UvaWorkflowEvent{SubmissionId: submissionId, BagId: bagId}
+	if len(submissionId) != 0 || len(bagId) != 0 || len(extra) != 0 {
+		wf := uvaaptsbus.UvaWorkflowEvent{SubmissionId: submissionId, BagId: bagId, Extra: extra}
 		b, err := wf.Serialize()
 		if err != nil {
 			fmt.Printf("ERROR: %s\n", err.Error())
@@ -55,12 +55,6 @@ func main() {
 		}
 		ev.Detail = b
 	}
-
-	//ev.SubmissionId = submissionId
-	//ev.BagId = bagId
-	//if len(detail) != 0 {
-	//	ev.Detail = json.RawMessage(detail)
-	//}
 
 	pl, _ := ev.Serialize()
 	err := process(messageId, source, pl)
