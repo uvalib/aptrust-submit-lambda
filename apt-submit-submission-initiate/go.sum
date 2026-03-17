@@ -50,8 +50,9 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8s=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
-github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260313185820-fa7dc382b04b h1:iRzsAiX6/gcWSmsFn6Vu20rIINvlqWY39qJoXs8EO1Y=
-github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260313185820-fa7dc382b04b/go.mod h1:7R2aqbx1YWfJhh3xWuAMvs2YLO2OcZGUmLsqbHMlp4Y=
-github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316142907-6428f3a0768f/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a h1:xZnE0w56RRI2jM8V8vnvrH1G3ww/m9ajBk1nTMud8fI=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a/go.mod h1:7R2aqbx1YWfJhh3xWuAMvs2YLO2OcZGUmLsqbHMlp4Y=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316181608-f47e243baf5e h1:JQqBdUVN9lLm1NSkiAN3W0Rpr8d2k2jOF3ERPywnv74=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316181608-f47e243baf5e/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

@@ -10,8 +10,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.12
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.8
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.97.1
-	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260313185820-fa7dc382b04b
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316142907-6428f3a0768f
+	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316181608-f47e243baf5e
 )
 
 require (
