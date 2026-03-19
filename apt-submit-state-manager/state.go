@@ -27,7 +27,7 @@ import (
 func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the submission
-	err := dao.UpdateSubmissionState("", workflowEvent.SubmissionId, SubmissionStatusPendingApproval)
+	err := dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusPendingApproval)
 	return err
 }
 
@@ -35,7 +35,7 @@ func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusE
 func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the submission
-	err := dao.UpdateSubmissionState("", workflowEvent.SubmissionId, SubmissionStatusBuilding)
+	err := dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusBuilding)
 	return err
 }
 
