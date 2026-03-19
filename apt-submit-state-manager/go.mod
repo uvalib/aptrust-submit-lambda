@@ -4,6 +4,7 @@ go 1.26.0
 
 // for local development
 //replace github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao => ../../aptrust-submit-db-dao/uvaaptsdao
+//replace github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus => ../../aptrust-submit-bus-definitions/uvaaptsbus
 
 require (
 	github.com/aws/aws-lambda-go v1.53.0

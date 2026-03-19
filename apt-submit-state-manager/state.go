@@ -23,10 +23,35 @@ import (
 //	return err
 //}
 
+// submission needs to be approved
+func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	// update the state of the submission
+	err := dao.UpdateSubmissionState("", workflowEvent.SubmissionId, SubmissionStatusPendingApproval)
+	return err
+}
+
+// submission was approved
+func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	// update the state of the submission
+	err := dao.UpdateSubmissionState("", workflowEvent.SubmissionId, SubmissionStatusBuilding)
+	return err
+}
+
 // bag was successfully submitted to APT
 func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-	
-	return nil
+
+	// update the state of the bag
+	err := dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusPendingIngest)
+	if err != nil {
+		return err
+	}
+
+	// also apply the etag cos it is contained in this event
+	err = dao.UpdateBagETag(workflowEvent.BagId, workflowEvent.SubmissionId, workflowEvent.Extra)
+
+	return err
 }
 
 //
