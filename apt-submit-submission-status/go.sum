@@ -10,5 +10,7 @@ github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
 github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319132326-e848491dd5e3 h1:QyEbyBUnDQRQheMpWOhDwYVnL7fzZRK55WFDeiPs0Oo=
 github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319132326-e848491dd5e3/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319183751-3c5b56ee85eb h1:OnPEd+VHIOPCMheqUJozOVAaQkUAglRnsGR+Jo0avo0=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319183751-3c5b56ee85eb/go.mod h1:oxug90pVhw0FcYc49Pf848Xs/mLoOWtbVObr36V6cuI=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
