@@ -6,6 +6,12 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
+	// APTrust configuration
+	APTUser      string // the APTrust user name
+	APTKey       string // the APTrust access key
+	APTStatusUrl string // the APTrust status URL
+	HttpTimeout  int    // http connection timeout
+
 	// database configuration
 	DbHost     string // database host
 	DbPort     int    // database port
@@ -21,6 +27,23 @@ func loadConfiguration() (*Config, error) {
 	var cfg Config
 
 	var err error
+	cfg.APTUser, err = ensureSetAndNonEmpty("APTRUST_USER")
+	if err != nil {
+		return nil, err
+	}
+	cfg.APTKey, err = ensureSetAndNonEmpty("APTRUST_KEY")
+	if err != nil {
+		return nil, err
+	}
+	cfg.APTStatusUrl, err = ensureSetAndNonEmpty("APTRUST_STATUS_URL")
+	if err != nil {
+		return nil, err
+	}
+	cfg.HttpTimeout, err = envToInt("HTTP_TIMEOUT")
+	if err != nil {
+		return nil, err
+	}
+
 	cfg.DbHost, err = ensureSetAndNonEmpty("DB_HOST")
 	if err != nil {
 		return nil, err
@@ -42,6 +65,13 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
+	// APTrust configuration
+	fmt.Printf("[CONFIG] APTUser         = [%s]\n", cfg.APTUser)
+	fmt.Printf("[CONFIG] APTKey          = [REDACTED]\n")
+	fmt.Printf("[CONFIG] APTStatusUrl    = [%s]\n", cfg.APTStatusUrl)
+	fmt.Printf("[CONFIG] HttpTimeout     = [%d]\n", cfg.HttpTimeout)
+
+	// database configuration
 	fmt.Printf("[CONFIG] DbHost          = [%s]\n", cfg.DbHost)
 	fmt.Printf("[CONFIG] DbPort          = [%d]\n", cfg.DbPort)
 	fmt.Printf("[CONFIG] DbName          = [%s]\n", cfg.DbName)

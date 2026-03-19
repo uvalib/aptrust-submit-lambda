@@ -7,8 +7,8 @@ go 1.26.1
 
 require (
 	github.com/aws/aws-lambda-go v1.53.0
-	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260313185820-fa7dc382b04b
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260316132313-c44e3ba015e4
+	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319132326-e848491dd5e3
 )
 
 require (
@@ -27,5 +27,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.9 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
-	github.com/lib/pq v1.11.2 // indirect
+	github.com/lib/pq v1.12.0 // indirect
 )

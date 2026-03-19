@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
@@ -40,8 +41,40 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	}
 
 	if len(bags) != 0 {
-		for _, b := range bags {
-			fmt.Printf("DEBUG: checking APT for ingest status of '%s'\n", b.Name)
+		httpClient := newHttpClient(1, cfg.HttpTimeout)
+		// important, cleanup properly
+		defer httpClient.CloseIdleConnections()
+
+		for _, bg := range bags {
+
+			//status := getAptStatus(httpClient, bg)
+			//switch status {
+			//case BagStatusPendingIngest:
+			//default:
+			//}
+			//if status != BagStatusPendingIngest {
+			//}
+
+			if len(bg.ETag) != 0 {
+				url := strings.Replace(cfg.APTStatusUrl, "{:etag}", bg.ETag, 1)
+
+				fmt.Printf("DEBUG: checking for status of <%s/%s>\n", bg.Submission, bg.Name)
+				res, err := httpGet(httpClient, url, cfg.APTUser, cfg.APTKey)
+				if err == nil {
+					//fmt.Printf("DEBUG: request [%s]\n", request.Body)
+					r := AptStatusResponse{}
+					err := json.Unmarshal(res, &r)
+					if err != nil {
+						fmt.Printf("ERROR: json.Unmarshal() failed (%s)\n", err.Error())
+					} else {
+						fmt.Printf("DEBUG: received [%v]\n", r)
+					}
+				} else {
+					fmt.Printf("WARNING: getting bag status for <%s/%s> (%s)\n", bg.Submission, bg.Name, err.Error())
+				}
+			} else {
+				fmt.Printf("ERROR: bag <%s/%s> has an empty etag, cannot check for status\n", bg.Submission, bg.Name)
+			}
 		}
 	}
 
