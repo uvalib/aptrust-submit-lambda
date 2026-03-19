@@ -6,6 +6,10 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
+	// event bus definitions
+	BusName        string // the event bus name
+	BusEventSource string // the source of published events
+
 	// APTrust configuration
 	APTUser      string // the APTrust user name
 	APTKey       string // the APTrust access key
@@ -27,6 +31,17 @@ func loadConfiguration() (*Config, error) {
 	var cfg Config
 
 	var err error
+	// event bus definitions
+	cfg.BusName, err = ensureSetAndNonEmpty("EVENT_BUS_NAME")
+	if err != nil {
+		return nil, err
+	}
+	cfg.BusEventSource, err = ensureSetAndNonEmpty("EVENT_SRC_NAME")
+	if err != nil {
+		return nil, err
+	}
+
+	// APTrust definitions
 	cfg.APTUser, err = ensureSetAndNonEmpty("APTRUST_USER")
 	if err != nil {
 		return nil, err
@@ -44,6 +59,7 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
+	// database definitions
 	cfg.DbHost, err = ensureSetAndNonEmpty("DB_HOST")
 	if err != nil {
 		return nil, err
@@ -64,6 +80,10 @@ func loadConfiguration() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// event bus definitions
+	fmt.Printf("[CONFIG] BusName         = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] BusEventSource  = [%s]\n", cfg.BusEventSource)
 
 	// APTrust configuration
 	fmt.Printf("[CONFIG] APTUser         = [%s]\n", cfg.APTUser)

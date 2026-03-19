@@ -26,6 +26,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionApproved:
 	//case uvaaptsbus.EventBagBuilt:
 	case uvaaptsbus.EventBagSubmitted:
+	case uvaaptsbus.EventBagRejected:
+	case uvaaptsbus.EventBagAccepted:
 	default:
 		fmt.Printf("ERROR: unexpected event type (%s), ignoring\n", be.EventName)
 		return nil
@@ -68,6 +70,10 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//	err = handleBagBuilt(eventBus, be, wf, dao)
 	case uvaaptsbus.EventBagSubmitted:
 		err = handleBagSubmitted(eventBus, be, wf, dao)
+	case uvaaptsbus.EventBagRejected:
+		err = handleBagRejected(eventBus, be, wf, dao)
+	case uvaaptsbus.EventBagAccepted:
+		err = handleBagAccepted(eventBus, be, wf, dao)
 	}
 
 	return err
