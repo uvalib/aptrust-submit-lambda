@@ -24,8 +24,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// ensure this is the type of event we want to process
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionApprove:
-	case uvaaptsbus.EventSubmissionApproved:
-	case uvaaptsbus.EventSubmissionDeclined:
+	case uvaaptsbus.EventSubmissionReconcileFail:
 	default:
 		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
 		return nil
@@ -55,20 +54,39 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// cleanup on exit
 	defer dao.Close()
 
-	// create our event bus client
-	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
+	// assume the recipient is the administrator
+	recipient := cfg.AdminEmail
 
-	// event specific processing
-	switch be.EventName {
-	case uvaaptsbus.EventSubmissionApprove:
-		err = handleSubmissionApprove(eventBus, be, wf, dao)
-	case uvaaptsbus.EventSubmissionApproved:
-		err = handleSubmissionApproval(eventBus, be, wf, dao)
-	case uvaaptsbus.EventSubmissionDeclined:
-		err = handleSubmissionDeclined(eventBus, be, wf, dao)
+	// if this is (potentially) an approval email, ensure this is not an auto-approve submission
+	if be.EventName == uvaaptsbus.EventSubmissionApprove {
+		// get the submission
+		sub, err := dao.GetSubmissionByIdentifier(wf.SubmissionId)
+		if err != nil {
+			return err
+		}
+
+		// this will be an auto-approval so abandon the mailer
+		if len(sub.ApprovalEmail) == 0 {
+			fmt.Printf("WARNING: auto-approve submission, no email necessary\n")
+			return nil
+		}
+
+		// recipient will be the submission approver
+		recipient = sub.ApprovalEmail
 	}
 
-	return err
+	// create our event bus client
+	//eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
+
+	// render the email body
+	subject, body, err := renderSubjectAndBody(cfg, recipient, be, wf)
+	if err != nil {
+		fmt.Printf("ERROR: rendering email content (%s)\n", err.Error())
+		return err
+	}
+
+	// send the mail
+	return sendEmail(cfg, subject, recipient, cfg.MailCC, body)
 }
 
 //

@@ -1,0 +1,15 @@
+Dear {{.Recipient}},
+<p>
+
+Approval required for submission {{.Submission}}
+<p>
+
+Please go here: {{.Url}}
+<p>
+
+Best Regards,<br>
+APTrust submission service,<br>
+University of Virginia Library<br>
+<p>
+
+{{.Sender}}

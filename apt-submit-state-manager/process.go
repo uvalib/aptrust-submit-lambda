@@ -29,7 +29,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventBagRejected:
 	case uvaaptsbus.EventBagAccepted:
 	default:
-		fmt.Printf("ERROR: unexpected event type (%s), ignoring\n", be.EventName)
+		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
 		return nil
 	}
 

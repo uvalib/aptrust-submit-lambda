@@ -1,0 +1,15 @@
+Dear {{.Recipient}},
+<p>
+
+Conflict(s) encountered with submission {{.Submission}}
+<p>
+
+Please go here: {{.Url}}
+<p>
+
+Best Regards,<br>
+APTrust submission service,<br>
+University of Virginia Library<br>
+<p>
+
+{{.Sender}}

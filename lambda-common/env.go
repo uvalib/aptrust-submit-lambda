@@ -62,6 +62,20 @@ func envToInt(env string) (int, error) {
 	return n, nil
 }
 
+func envToBool(env string) (bool, error) {
+
+	str, err := ensureSetAndNonEmpty(env)
+	if err != nil {
+		return false, err
+	}
+
+	b, err := strconv.ParseBool(str)
+	if err != nil {
+		return false, err
+	}
+	return b, nil
+}
+
 //
 // end of file
 //
