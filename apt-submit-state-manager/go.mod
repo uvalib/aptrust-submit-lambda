@@ -9,7 +9,7 @@ go 1.26.0
 require (
 	github.com/aws/aws-lambda-go v1.53.0
 	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260319183751-3c5b56ee85eb
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260320145349-b675729b7117
 )
 
 require (
