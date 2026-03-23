@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
@@ -22,25 +23,13 @@ type Request struct {
 }
 
 type Response struct {
-	//Sid string `json:"sid"`
+	Submission string    `json:"submission"`
+	Status     string    `json:"status"`
+	Updated    time.Time `json:"updated"`
 	// other stuff
 }
 
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-
-	//var cid string
-	//var sid string
-
-	// log inbound query parameters
-	//for key, value := range request.QueryStringParameters {
-	//	fmt.Printf("DEBUG: query param [%s] = [%s]\n", key, value)
-	//	switch key {
-	//	case "cid":
-	//cid = value
-	//	case "sid":
-	//sid = value
-	//	}
-	//}
 
 	// log inbound headers
 	for key, value := range request.Headers {
@@ -57,7 +46,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// ensure we have the parameters we need
 	if len(r.ClientIdentifier) == 0 || len(r.SubmissionIdentifier) == 0 || len(r.BagFolders) == 0 {
-		err := fmt.Errorf("one or more missing required params: [cid, sid, bag_folders]")
+		fmt.Printf("ERROR: one or more missing required params: [cid, sid, bag_folders]\n")
+		err = fmt.Errorf("one or more missing required params: [cid, sid, bag_folders]")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
@@ -89,8 +79,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	sub, err := dao.GetSubmissionByIdentifier(r.SubmissionIdentifier)
 	if err != nil {
 		if errors.As(err, &ErrSubmissionNotFound) {
-			//return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
-			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
+			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
@@ -172,6 +161,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// construct the response
 	response := Response{}
+	response.Submission = r.SubmissionIdentifier
+	response.Status = SubmissionStatusValidating
+	response.Updated = time.Now()
 
 	buf, err := json.Marshal(response)
 	if err != nil {
