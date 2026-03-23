@@ -43,7 +43,7 @@ func main() {
 	resp, err := process(messageId, "api.gateway", req)
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err.Error())
-		os.Exit(1)
+		//os.Exit(1)
 	}
 
 	fmt.Printf("INFO: response: %s\n", resp.Body)
