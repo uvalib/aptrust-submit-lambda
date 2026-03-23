@@ -12,7 +12,7 @@ import (
 )
 
 func apiGatewayProxyErrorResponse(status int, err error) (events.APIGatewayProxyResponse, error) {
-	return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: status}, err
+	return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: status}, nil
 }
 
 func readFile(path string) ([]string, error) {
