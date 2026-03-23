@@ -29,17 +29,6 @@ type Response struct {
 
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	//var cid string
-
-	// log inbound query parameters
-	//for key, value := range request.QueryStringParameters {
-	//	fmt.Printf("DEBUG: query param [%s] = [%s]\n", key, value)
-	//	switch key {
-	//	case "cid":
-	//cid = value
-	//	}
-	//}
-
 	// log inbound headers
 	for key, value := range request.Headers {
 		fmt.Printf("DEBUG: header [%s] = [%s]\n", key, value)
@@ -55,15 +44,10 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 
 	// ensure we have the parameters we need
 	if len(r.ClientIdentifier) == 0 {
-		err := fmt.Errorf("missing required params (cid)")
+		fmt.Printf("ERROR: missing required params (cid)\n")
+		err = fmt.Errorf("missing required params (cid)")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
-
-	// just to make sure...
-	//if len(r.BagFolders) == 0 {
-	//	err := fmt.Errorf("no bags specified in request body")
-	//	return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
-	//}
 
 	// load configuration
 	cfg, err := loadConfiguration()
