@@ -66,11 +66,11 @@ func loadConfiguration() (*Config, error) {
 	fmt.Printf("[CONFIG] BusEventSource = [%s]\n", cfg.BusEventSource)
 
 	// database details
-	fmt.Printf("[CONFIG] DbHost          = [%s]\n", cfg.DbHost)
-	fmt.Printf("[CONFIG] DbPort          = [%d]\n", cfg.DbPort)
-	fmt.Printf("[CONFIG] DbName          = [%s]\n", cfg.DbName)
-	fmt.Printf("[CONFIG] DbUser          = [%s]\n", cfg.DbUser)
-	fmt.Printf("[CONFIG] DbPassword      = [REDACTED]\n")
+	fmt.Printf("[CONFIG] DbHost         = [%s]\n", cfg.DbHost)
+	fmt.Printf("[CONFIG] DbPort         = [%d]\n", cfg.DbPort)
+	fmt.Printf("[CONFIG] DbName         = [%s]\n", cfg.DbName)
+	fmt.Printf("[CONFIG] DbUser         = [%s]\n", cfg.DbUser)
+	fmt.Printf("[CONFIG] DbPassword     = [REDACTED]\n")
 
 	return &cfg, nil
 }
