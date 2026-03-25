@@ -91,6 +91,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 	}
 
+	fmt.Printf("DEBUG: processing submission of %d bags\n", len(r.BagFolders))
+
 	// create our s3 helper client
 	s3Client, err := newS3Client()
 	if err != nil {
@@ -111,13 +113,15 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get all the bags included in the submission
 	bagList := findIncludedBags(submissionKeyPrefix, suppliedFiles)
 	if len(bagList) == 0 {
+		fmt.Printf("ERROR: no bags included in the submission\n")
 		err = fmt.Errorf("no bags included in the submission")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
 	// ensure the bags specified in the request are the same as the ones located
 	if areIdentical(bagList, r.BagFolders) == false {
-		err = fmt.Errorf("bag list does not match submission")
+		fmt.Printf("ERROR: located bag list does not match submission list\n")
+		err = fmt.Errorf("located bag list does not match submission list")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
@@ -126,14 +130,19 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	for _, bag := range bagList {
 		rows, err := manifestContents(s3Client, cfg.InboundBucket, submissionKeyPrefix, bag)
 		if err != nil {
+			fmt.Printf("ERROR: manifest %s/%s bad or missing\n", bag, manifestName)
 			err = fmt.Errorf("manifest %s/%s bad or missing", bag, manifestName)
 			return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 		}
 		itemizedFiles = append(itemizedFiles, rows...)
 	}
 
+	fmt.Printf("INFO: %d files enumerated in %d manifests\n", len(itemizedFiles), len(bagList))
+	fmt.Printf("INFO: %d files located in the submission\n", len(suppliedFiles))
+
 	// our enumerated files and the supplied list should be the same size
 	if len(itemizedFiles)+len(bagList) != len(suppliedFiles) {
+		fmt.Printf("ERROR: manifests do not match submission\n")
 		err = fmt.Errorf("manifests do not match submission")
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
@@ -163,7 +172,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	response := Response{}
 	response.Submission = r.SubmissionIdentifier
 	response.Status = SubmissionStatusValidating
-	response.Updated = time.Now()
+	response.Updated = time.Now().UTC()
 
 	buf, err := json.Marshal(response)
 	if err != nil {
