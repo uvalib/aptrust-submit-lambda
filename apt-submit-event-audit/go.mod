@@ -3,7 +3,7 @@ module github.com/uvalib/apt-submit-event-audit
 go 1.26.0
 
 require (
-	github.com/aws/aws-lambda-go v1.53.0
+	github.com/aws/aws-lambda-go v1.54.0
 	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260316181657-60b3597dab4a
 )
 
