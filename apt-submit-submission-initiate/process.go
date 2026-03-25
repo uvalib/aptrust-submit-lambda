@@ -29,6 +29,8 @@ type Response struct {
 	// other stuff
 }
 
+var maxBagsInSubmission = 200
+
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	// log inbound headers
@@ -48,6 +50,13 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	if len(r.ClientIdentifier) == 0 || len(r.SubmissionIdentifier) == 0 || len(r.BagFolders) == 0 {
 		fmt.Printf("ERROR: one or more missing required params: [cid, sid, bag_folders]\n")
 		err = fmt.Errorf("one or more missing required params: [cid, sid, bag_folders]")
+		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
+	}
+
+	// ensure we do not have too many bags in the submission
+	if len(r.BagFolders) > maxBagsInSubmission {
+		fmt.Printf("ERROR: too many bags in submission, must be %d or less\n", maxBagsInSubmission)
+		err = fmt.Errorf("too many bags in submission, must be %d or less", maxBagsInSubmission)
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
