@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,9 +17,8 @@ import (
 
 type Response struct {
 	Submission string    `json:"submission"`
-	Status     string    `json:"status"`
+	State      string    `json:"state"`
 	Updated    time.Time `json:"updated"`
-	// other stuff
 }
 
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -61,20 +61,19 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	defer dao.Close()
 
 	// get the submission
-	//s, err := dao.GetSubmissionStatus(sid)
-	//if err != nil {
-	//	if errors.As(err, &ErrSubmissionNotFound) {
-	//		//return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
-	//		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
-	//	}
-	//	return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
-	//}
+	s, err := dao.GetSubmissionStateByIdentifier(sid)
+	if err != nil {
+		if errors.As(err, &ErrSubmissionNotFound) {
+			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
+		}
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
 
 	// construct the response
 	response := Response{}
-	response.Submission = sid
-	response.Status = "OK" //s.Status
-	//response.Updated = s.Updated
+	response.Submission = s.Submission
+	response.State = s.State
+	response.Updated = s.Updated
 
 	buf, err := json.Marshal(response)
 	if err != nil {
