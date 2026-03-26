@@ -29,10 +29,15 @@ func renderSubjectAndBody(cfg *Config, recipient string, be *uvaaptsbus.UvaBusEv
 		subject = "APTrust submission approval required"
 		url = cfg.ApprovalUrl
 
+	case uvaaptsbus.EventSubmissionValidateFail:
+		templateFile = "templates/submission-validate-fail.template"
+		subject = "APTrust submission validation failures encountered; investigation required"
+		url = cfg.ValidationFailedUrl
+
 	case uvaaptsbus.EventSubmissionReconcileFail:
-		templateFile = "templates/submission-conflict.template"
+		templateFile = "templates/submission-reconcile-fail.template"
 		subject = "APTrust submission conflicts encountered; investigation required"
-		url = cfg.ConflictUrl
+		url = cfg.ReconciliationFailedUrl
 	}
 
 	// substitute the submission id into the URL

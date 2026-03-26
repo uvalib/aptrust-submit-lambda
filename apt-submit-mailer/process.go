@@ -24,6 +24,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// ensure this is the type of event we want to process
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionApprove:
+	case uvaaptsbus.EventSubmissionValidateFail:
 	case uvaaptsbus.EventSubmissionReconcileFail:
 	default:
 		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
@@ -67,16 +68,13 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 		// this will be an auto-approval so abandon the mailer
 		if len(sub.ApprovalEmail) == 0 {
-			fmt.Printf("WARNING: auto-approve submission, no email necessary\n")
+			fmt.Printf("INFO: auto-approve submission, no email necessary\n")
 			return nil
 		}
 
 		// recipient will be the submission approver
 		recipient = sub.ApprovalEmail
 	}
-
-	// create our event bus client
-	//eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
 
 	// render the email body
 	subject, body, err := renderSubjectAndBody(cfg, recipient, be, wf)

@@ -1,10 +1,10 @@
 Dear {{.Recipient}},
 <p>
 
-Approval required for submission {{.Submission}};
+Validation failure(s) encountered with submission {{.Submission}};
 <p>
 
-Please go here to approve: {{.Url}}
+Please go here to investigate: {{.Url}}
 <p>
 
 Best Regards,<br>

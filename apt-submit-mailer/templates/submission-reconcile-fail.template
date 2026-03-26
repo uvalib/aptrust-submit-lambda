@@ -1,10 +1,10 @@
 Dear {{.Recipient}},
 <p>
 
-Conflict(s) encountered with submission {{.Submission}}
+Conflict(s) encountered with submission {{.Submission}};
 <p>
 
-Please go here: {{.Url}}
+Please go here to investigate: {{.Url}}
 <p>
 
 Best Regards,<br>

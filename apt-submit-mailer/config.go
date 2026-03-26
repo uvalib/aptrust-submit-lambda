@@ -11,8 +11,9 @@ type Config struct {
 	//BusName string // the message bus name
 
 	// configuration needed for mail content
-	ApprovalUrl string // approval form URL
-	ConflictUrl string // conflict report URL
+	ValidationFailedUrl     string // validation failure report URL
+	ReconciliationFailedUrl string // reconciliation failure report URL
+	ApprovalUrl             string // approval form URL
 
 	// mailer configuration
 	EmailSender    string   // the email sender
@@ -44,11 +45,15 @@ func loadConfiguration() (*Config, error) {
 	var err error
 
 	// mail content configuration
-	cfg.ApprovalUrl, err = ensureSetAndNonEmpty("APPROVE_URL")
+	cfg.ApprovalUrl, err = ensureSetAndNonEmpty("APPROVAL_URL")
 	if err != nil {
 		return nil, err
 	}
-	cfg.ConflictUrl, err = ensureSetAndNonEmpty("CONFLICT_URL")
+	cfg.ValidationFailedUrl, err = ensureSetAndNonEmpty("VALIDATION_FAIL_URL")
+	if err != nil {
+		return nil, err
+	}
+	cfg.ReconciliationFailedUrl, err = ensureSetAndNonEmpty("RECONCILIATION_FAIL_URL")
 	if err != nil {
 		return nil, err
 	}
@@ -105,29 +110,28 @@ func loadConfiguration() (*Config, error) {
 	}
 
 	// mail content configuration
-	fmt.Printf("[CONFIG] ApprovalUrl    = [%s]\n", cfg.ApprovalUrl)
-	fmt.Printf("[CONFIG] ConflictUrl    = [%s]\n", cfg.ConflictUrl)
+	fmt.Printf("[CONFIG] ValidationFailedUrl     = [%s]\n", cfg.ValidationFailedUrl)
+	fmt.Printf("[CONFIG] ReconciliationFailedUrl = [%s]\n", cfg.ReconciliationFailedUrl)
+	fmt.Printf("[CONFIG] ApprovalUrl             = [%s]\n", cfg.ApprovalUrl)
 
-	fmt.Printf("[CONFIG] EmailSender    = [%s]\n", cfg.EmailSender)
-	fmt.Printf("[CONFIG] SendEmail      = [%t]\n", cfg.SendEmail)
-	fmt.Printf("[CONFIG] DebugRecipient = [%s]\n", cfg.DebugRecipient)
-	fmt.Printf("[CONFIG] AdminEmail     = [%s]\n", cfg.AdminEmail)
-	fmt.Printf("[CONFIG] MailCC         = [%v]\n", cfg.MailCC)
+	fmt.Printf("[CONFIG] EmailSender             = [%s]\n", cfg.EmailSender)
+	fmt.Printf("[CONFIG] SendEmail               = [%t]\n", cfg.SendEmail)
+	fmt.Printf("[CONFIG] DebugRecipient          = [%s]\n", cfg.DebugRecipient)
+	fmt.Printf("[CONFIG] AdminEmail              = [%s]\n", cfg.AdminEmail)
+	fmt.Printf("[CONFIG] MailCC                  = [%v]\n", cfg.MailCC)
 
 	// SMTP configuration
-	fmt.Printf("[CONFIG] SMTPHost       = [%s]\n", cfg.SMTPHost)
-	fmt.Printf("[CONFIG] SMTPPort       = [%d]\n", cfg.SMTPPort)
-	fmt.Printf("[CONFIG] SMTPUser       = [%s]\n", cfg.SMTPUser)
-	fmt.Printf("[CONFIG] SMTPPass       = [%s]\n", cfg.SMTPPass)
-
-	//fmt.Printf("[conf] BusName        = [%s]\n", cfg.BusName)
+	fmt.Printf("[CONFIG] SMTPHost                = [%s]\n", cfg.SMTPHost)
+	fmt.Printf("[CONFIG] SMTPPort                = [%d]\n", cfg.SMTPPort)
+	fmt.Printf("[CONFIG] SMTPUser                = [%s]\n", cfg.SMTPUser)
+	fmt.Printf("[CONFIG] SMTPPass                = [%s]\n", cfg.SMTPPass)
 
 	// database configuration
-	fmt.Printf("[CONFIG] DbHost         = [%s]\n", cfg.DbHost)
-	fmt.Printf("[CONFIG] DbPort         = [%d]\n", cfg.DbPort)
-	fmt.Printf("[CONFIG] DbName         = [%s]\n", cfg.DbName)
-	fmt.Printf("[CONFIG] DbUser         = [%s]\n", cfg.DbUser)
-	fmt.Printf("[CONFIG] DbPassword     = [REDACTED]\n")
+	fmt.Printf("[CONFIG] DbHost                  = [%s]\n", cfg.DbHost)
+	fmt.Printf("[CONFIG] DbPort                  = [%d]\n", cfg.DbPort)
+	fmt.Printf("[CONFIG] DbName                  = [%s]\n", cfg.DbName)
+	fmt.Printf("[CONFIG] DbUser                  = [%s]\n", cfg.DbUser)
+	fmt.Printf("[CONFIG] DbPassword              = [REDACTED]\n")
 
 	return &cfg, nil
 }
