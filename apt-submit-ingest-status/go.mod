@@ -1,4 +1,4 @@
-module github.com/uvalib/apt-submit-bag-status
+module github.com/uvalib/apt-submit-ingest-status
 
 go 1.26.0
 

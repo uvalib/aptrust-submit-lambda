@@ -29,11 +29,15 @@ phases:
       - make linux
       #
       # apt-submit-bag-status function
-      - cd ${CODEBUILD_SRC_DIR}/apt-submit-bag-status
-      - make linux
+      #- cd ${CODEBUILD_SRC_DIR}/apt-submit-bag-status
+      #- make linux
       #
       # apt-submit-event-audit function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-event-audit
+      - make linux
+      #
+      # apt-submit-ingest-status function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-ingest-status
       - make linux
       #
       # apt-submit-mailer function
@@ -66,10 +70,13 @@ phases:
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-approve/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-approve/deployment.zip --quiet
       #
       # apt-submit-bag-status function
-      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-bag-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-bag-status/deployment.zip --quiet
+      #- aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-bag-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-bag-status/deployment.zip --quiet
       #
       # apt-submit-event-audit function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-event-audit/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-event-audit/deployment.zip --quiet
+      #
+      # apt-submit-ingest-status function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-ingest-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-ingest-status/deployment.zip --quiet
       #
       # apt-submit-mailer function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-mailer/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-mailer/deployment.zip --quiet
