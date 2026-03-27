@@ -29,8 +29,6 @@ type Response struct {
 	// other stuff
 }
 
-var maxBagsInSubmission = 200
-
 func process(messageId string, messageSrc string, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	// log inbound headers
@@ -50,13 +48,6 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	if len(r.ClientIdentifier) == 0 || len(r.SubmissionIdentifier) == 0 || len(r.BagFolders) == 0 {
 		fmt.Printf("ERROR: one or more missing required params: [cid, sid, bag_folders]\n")
 		err = fmt.Errorf("one or more missing required params: [cid, sid, bag_folders]")
-		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
-	}
-
-	// ensure we do not have too many bags in the submission
-	if len(r.BagFolders) > maxBagsInSubmission {
-		fmt.Printf("ERROR: too many bags in submission, must be %d or less\n", maxBagsInSubmission)
-		err = fmt.Errorf("too many bags in submission, must be %d or less", maxBagsInSubmission)
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
@@ -134,48 +125,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
-	// get an enumeration of all the files specified in the manifests
-	itemizedFiles := make([]ManifestRow, 0)
-	for _, bag := range bagList {
-		rows, err := manifestContents(s3Client, cfg.InboundBucket, submissionKeyPrefix, bag)
-		if err != nil {
-			fmt.Printf("ERROR: manifest %s/%s bad or missing\n", bag, manifestName)
-			err = fmt.Errorf("manifest %s/%s bad or missing", bag, manifestName)
-			return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
-		}
-		itemizedFiles = append(itemizedFiles, rows...)
-	}
-
-	fmt.Printf("INFO: %d files enumerated in %d manifests\n", len(itemizedFiles), len(bagList))
 	fmt.Printf("INFO: %d files located in the submission\n", len(suppliedFiles))
-
-	// our enumerated files and the supplied list should be the same size
-	if len(itemizedFiles)+len(bagList) != len(suppliedFiles) {
-		fmt.Printf("ERROR: manifests do not match submission\n")
-		err = fmt.Errorf("manifests do not match submission")
-		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
-	}
-
-	// FIXME
-	// ensure the enumerated list matches the provided list
-	//
-
-	// create our event bus client
-	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
-
-	// create the bags
-	err = createDBBags(dao, bagList, r.SubmissionIdentifier)
-	if err != nil {
-		fmt.Printf("ERROR: creating bags (%s)\n", err.Error())
-		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
-	}
-
-	// create the files
-	err = createDBFiles(dao, itemizedFiles, r.SubmissionIdentifier)
-	if err != nil {
-		fmt.Printf("ERROR: creating files (%s)\n", err.Error())
-		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
-	}
+	fmt.Printf("INFO: %d bags located in the submission\n", len(bagList))
 
 	// construct the response
 	response := Response{}
@@ -188,6 +139,9 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		fmt.Printf("ERROR: json.Marshal() failed (%s)\n", err.Error())
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
+
+	// create our event bus client
+	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
 
 	// we are done, publish the appropriate event and terminate
 	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, r.SubmissionIdentifier, "", "")
