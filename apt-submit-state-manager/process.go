@@ -41,7 +41,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		return err
 	}
 
-	fmt.Printf("INFO: EVENT %s / %s\n", be.String(), wf.String())
+	fmt.Printf("INFO: event %s/%s\n", be.String(), wf.String())
 
 	// load configuration
 	cfg, err := loadConfiguration()
