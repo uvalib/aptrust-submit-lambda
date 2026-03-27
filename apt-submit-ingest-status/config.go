@@ -6,6 +6,10 @@ import (
 
 // Config defines all the service configuration parameters
 type Config struct {
+	// general definitions
+	MaxRequests int // maximum number of requests in any lambda iteration
+	HttpTimeout int // http connection timeout
+
 	// event bus definitions
 	BusName        string // the event bus name
 	BusEventSource string // the source of published events
@@ -14,7 +18,6 @@ type Config struct {
 	APTUser      string // the APTrust user name
 	APTKey       string // the APTrust access key
 	APTStatusUrl string // the APTrust status URL
-	HttpTimeout  int    // http connection timeout
 
 	// database configuration
 	DbHost     string // database host
@@ -31,6 +34,16 @@ func loadConfiguration() (*Config, error) {
 	var cfg Config
 
 	var err error
+	// general definitions
+	cfg.MaxRequests, err = envToInt("MAX_REQUESTS")
+	if err != nil {
+		return nil, err
+	}
+	cfg.HttpTimeout, err = envToInt("HTTP_TIMEOUT")
+	if err != nil {
+		return nil, err
+	}
+
 	// event bus definitions
 	cfg.BusName, err = ensureSetAndNonEmpty("EVENT_BUS_NAME")
 	if err != nil {
@@ -51,10 +64,6 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 	cfg.APTStatusUrl, err = ensureSetAndNonEmpty("APTRUST_STATUS_URL")
-	if err != nil {
-		return nil, err
-	}
-	cfg.HttpTimeout, err = envToInt("HTTP_TIMEOUT")
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +89,10 @@ func loadConfiguration() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// general definitions
+	fmt.Printf("[CONFIG] MaxRequests     = [%d]\n", cfg.MaxRequests)
+	fmt.Printf("[CONFIG] HttpTimeout     = [%d]\n", cfg.HttpTimeout)
 
 	// event bus definitions
 	fmt.Printf("[CONFIG] BusName         = [%s]\n", cfg.BusName)

@@ -11,6 +11,8 @@ import (
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
+
+	"math/rand"
 )
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {
@@ -48,6 +50,19 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		httpClient := newHttpClient(1, cfg.HttpTimeout)
 		// important, cleanup properly
 		defer httpClient.CloseIdleConnections()
+
+		// if we have more bags than requests we are permitted...
+		if len(bags) > cfg.MaxRequests {
+			fmt.Printf("INFO: randomly selecting the first %d of %d bags\n", cfg.MaxRequests, len(bags))
+			rand.Shuffle(len(bags), func(i, j int) {
+				bags[i], bags[j] = bags[j], bags[i]
+			})
+
+			// Take the first n elements
+			bags = bags[:cfg.MaxRequests]
+		} else {
+			fmt.Printf("INFO: checking status on %d bags\n", len(bags))
+		}
 
 		// proces each of the bags we know about
 		for _, bg := range bags {
