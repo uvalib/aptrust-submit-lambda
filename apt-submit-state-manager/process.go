@@ -23,8 +23,9 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 	// ensure this is the type of event we want to process
 	switch be.EventName {
+	case uvaaptsbus.EventSubmissionApprove:
 	case uvaaptsbus.EventSubmissionApproved:
-	//case uvaaptsbus.EventBagBuilt:
+	case uvaaptsbus.EventBagBuilt:
 	case uvaaptsbus.EventBagSubmitted:
 	case uvaaptsbus.EventBagRejected:
 	case uvaaptsbus.EventBagAccepted:
@@ -66,8 +67,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		err = handleSubmissionApprove(eventBus, be, wf, dao)
 	case uvaaptsbus.EventSubmissionApproved:
 		err = handleSubmissionApproved(eventBus, be, wf, dao)
-	//case uvaaptsbus.EventBagBuilt:
-	//	err = handleBagBuilt(eventBus, be, wf, dao)
+	case uvaaptsbus.EventBagBuilt:
+		err = handleBagBuilt(eventBus, be, wf, dao)
 	case uvaaptsbus.EventBagSubmitted:
 		err = handleBagSubmitted(eventBus, be, wf, dao)
 	case uvaaptsbus.EventBagRejected:
