@@ -5,26 +5,6 @@ import (
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
-// submission needs to be approved
-func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-
-	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusPendingApproval)
-}
-
-// submission was approved
-func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-
-	// audit the approval cos the approver is contained in this event
-	err := dao.AddApproval(workflowEvent.SubmissionId, workflowEvent.Extra)
-	if err != nil {
-		return err
-	}
-
-	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusBuilding)
-}
-
 // bag was built
 func handleBagBuilt(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
@@ -42,14 +22,46 @@ func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent,
 	}
 
 	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusPendingIngest)
+	err = dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusPendingIngest)
+	if err != nil {
+		return err
+	}
+
+	// get the submission status
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+
+	// if the status is 'building' update to 'pending-ingest'
+	if ss.State == SubmissionStatusBuilding {
+		// update the status of the submission
+		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusPendingIngest)
+	}
+	return err
 }
 
 // bag was rejected by APT
 func handleBagRejected(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusError)
+	err := dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusError)
+	if err != nil {
+		return err
+	}
+
+	// get the submission status
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+
+	// if the status is 'pending-ingest', update to 'incomplete'
+	if ss.State == SubmissionStatusPendingIngest {
+		// update the status of the submission
+		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusIncomplete)
+	}
+	return err
 }
 
 // bag was successfully accepted by APT
