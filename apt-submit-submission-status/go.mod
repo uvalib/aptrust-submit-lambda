@@ -10,4 +10,4 @@ require (
 	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260326165616-55d8e9deb16a
 )
 
-require github.com/lib/pq v1.12.0 // indirect
+require github.com/lib/pq v1.12.1 // indirect
