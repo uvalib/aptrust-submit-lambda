@@ -18,7 +18,23 @@ func handleSubmissionValidateFail(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.Uv
 	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusError)
 }
 
+// submission needs to be reconciled
+//func handleSubmissionReconcile(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+//}
+
 func handleSubmissionReconcileFail(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	// update the state of all the bags
+	bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+	for _, b := range bags {
+		err = dao.UpdateBagState(b.Name, workflowEvent.SubmissionId, BagStatusError)
+		if err != nil {
+			return err
+		}
+	}
 
 	// update the state of the submission
 	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusError)

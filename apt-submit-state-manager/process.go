@@ -25,6 +25,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionValidate: // submission ready to validate
 	case uvaaptsbus.EventSubmissionValidateFail: // validation failed
+	//case uvaaptsbus.EventSubmissionReconcile: // submission ready to reconcile
 	case uvaaptsbus.EventSubmissionReconcileFail: // reconciliation failed
 	case uvaaptsbus.EventSubmissionApprove: // submission to be approved
 	case uvaaptsbus.EventSubmissionApproved: // submission approved (or auto approved)
@@ -76,6 +77,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionValidateFail:
 		err = handleSubmissionValidateFail(eventBus, be, wf, dao)
 
+	//case uvaaptsbus.EventSubmissionReconcile: err = handleSubmissionReconcile(eventBus, be, wf, dao)
 	case uvaaptsbus.EventSubmissionReconcileFail:
 		err = handleSubmissionReconcileFail(eventBus, be, wf, dao)
 

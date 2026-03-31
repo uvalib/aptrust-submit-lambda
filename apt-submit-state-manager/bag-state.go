@@ -67,6 +67,48 @@ func handleBagRejected(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 // bag was successfully accepted by APT
 func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
+	// in addition to updating the just accepted bag state
+	// check to see if a) the current submission status is in the 'pending-ingest' state and
+	// b) if the submission bag(s) are done
+	//
+
+	// get the submission status
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+
+	// if the status is 'pending-ingest', check to see if all the bags are done
+	if ss.State == SubmissionStatusPendingIngest {
+
+		// check to see how many bags remain in the pending state... if none
+		// update the submission state to 'complete'
+		bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+		if err != nil {
+			return err
+		}
+		allDone := true
+		for _, b := range bags {
+			if b.Name != workflowEvent.BagId {
+				bs, err := dao.GetBagStateBySubmissionAndName(workflowEvent.SubmissionId, b.Name)
+				if err != nil {
+					return err
+				}
+				if bs.State == SubmissionStatusPendingIngest {
+					allDone = false
+					break
+				}
+			}
+		}
+		if allDone == true {
+			// update the status of the submission
+			err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusComplete)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	// update the state of the bag
 	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, bagStatusComplete)
 }
