@@ -8,6 +8,7 @@ BEGIN;
 CREATE TABLE submission_failures (
    id               serial PRIMARY KEY,
    submission       VARCHAR( 64 ) NOT NULL DEFAULT '' REFERENCES submissions(identifier),
+   failure          TEXT NOT NULL DEFAULT '',
    created_at       timestamp DEFAULT NOW()
 );
 
