@@ -60,20 +60,20 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 	// if this is (potentially) an approval email, ensure this is not an auto-approve submission
 	if be.EventName == uvaaptsbus.EventSubmissionApprove {
-		// get the submission
-		sub, err := dao.GetSubmissionByIdentifier(wf.SubmissionId)
+		// get the client information
+		cli, err := dao.GetClientByIdentifier(be.ClientId)
 		if err != nil {
 			return err
 		}
 
 		// this will be an auto-approval so abandon the mailer
-		if len(sub.ApprovalEmail) == 0 {
+		if len(cli.ApprovalEmail) == 0 {
 			fmt.Printf("INFO: auto-approve submission, no email necessary\n")
 			return nil
 		}
 
-		// recipient will be the submission approver
-		recipient = sub.ApprovalEmail
+		// recipient will be the client approver
+		recipient = cli.ApprovalEmail
 	}
 
 	// render the email body
