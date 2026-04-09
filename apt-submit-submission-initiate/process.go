@@ -91,8 +91,10 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 	}
 
-	fmt.Printf("DEBUG: processing submission of %d bags\n", len(r.BagFolders))
-
+	fmt.Printf("DEBUG: processing submission of %d bag(s)\n", len(r.BagFolders))
+	for ix, bn := range r.BagFolders {
+		fmt.Printf("DEBUG: bag %d [%s]\n", ix+1, bn)
+	}
 	// create our s3 helper client
 	s3Client, err := newS3Client()
 	if err != nil {
@@ -125,8 +127,8 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		return apiGatewayProxyErrorResponse(http.StatusBadRequest, err)
 	}
 
-	fmt.Printf("INFO: %d files located in the submission\n", len(suppliedFiles))
-	fmt.Printf("INFO: %d bags located in the submission\n", len(bagList))
+	fmt.Printf("INFO: %d file(s) located in the submission\n", len(suppliedFiles))
+	fmt.Printf("INFO: %d bag(s) located in the submission\n", len(bagList))
 
 	// construct the response
 	response := Response{}
