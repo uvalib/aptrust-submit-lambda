@@ -24,7 +24,7 @@ func sendEmail(cfg *Config, subject string, recipient string, cc []string, body 
 	mail.SetHeader("To", recipient)
 	mail.SetHeader("From", cfg.EmailSender)
 
-	if len(cc) != 0 && len(cc[0]) != 0 {
+	if len(cc) != 0 && len(cc[0]) != 0 && len(cfg.DebugRecipient) == 0 {
 		mail.SetHeader("Cc", cc...)
 	}
 
