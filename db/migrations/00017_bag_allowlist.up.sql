@@ -17,6 +17,7 @@ CREATE UNIQUE INDEX bag_allowlist_name_distinct_idx ON bag_allowlist(name);
 
 -- add the bags we know about
 INSERT INTO bag_allowlist(name) VALUES('virginia.edu/virginia.edu.libraETD');
+INSERT INTO bag_allowlist(name) VALUES('virginia.edu/virginia.edu.libraOpen');
 
 COMMIT;
 
