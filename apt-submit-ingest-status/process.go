@@ -8,12 +8,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 
 	"math/rand"
 )
+
+// after this period we will log a warning about a stale ingest
+var stalePendingThreshold = 24 * time.Hour
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {
 
@@ -71,9 +75,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 				// get the status, ignore errors
 				status, _ := getAptStatus(cfg, httpClient, bg)
 				switch status {
-				case AptStatusCancelled:
-				case AptStatusFailed:
-				case AptStatusSuspended:
+				case AptStatusCancelled, AptStatusFailed, AptStatusSuspended:
 					// something terminal happened, fire the rejected event
 					_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagRejected, "", bg.Submission, bg.Name, "")
 
@@ -81,7 +83,27 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 					// victory, fire the accepted event
 					_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagAccepted, "", bg.Submission, bg.Name, "")
 
-				default: // basically, do nothing
+				case AptStatusPending:
+
+					// get the latest bag status to determine when we submitted to APT and
+					// log a message if it is stale (stuck, often happens)
+					bstat, err := dao.GetBagStateBySubmissionAndName(bg.Submission, bg.Name)
+					if err != nil {
+						return err
+					}
+					age := time.Since(bstat.Updated)
+					if age > stalePendingThreshold {
+						fmt.Printf("WARNING: ingest stale for <%s/%s> (submitted: %s)\n", bg.Submission, bg.Name, bstat.Updated)
+					}
+
+				case AptStatusStarted:
+					// do nothing
+
+				case AptStatusUnknown:
+					// do nothing
+
+				default:
+					fmt.Printf("ERROR: unexpected status for bag <%s/%s> (%s)\n", bg.Submission, bg.Name, status)
 				}
 			} else {
 				fmt.Printf("WARNING: bag <%s/%s> has an empty etag, cannot check for status\n", bg.Submission, bg.Name)
