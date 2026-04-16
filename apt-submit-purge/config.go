@@ -9,11 +9,6 @@ type Config struct {
 	// asset cache details
 	AssetBucket     string
 	AssetFilesystem string
-
-	// event bus definitions
-	//BusName        string // the event bus name
-	//BusEventSource string // the source of published events
-
 }
 
 // loadConfiguration will load the service configuration from env/cmdline
@@ -33,17 +28,9 @@ func loadConfiguration() (*Config, error) {
 		return nil, err
 	}
 
-	// event bus definitions
-	//cfg.BusName = envWithDefault("EVENT_BUS_NAME", "")
-	//cfg.BusEventSource = envWithDefault("EVENT_SRC_NAME", "")
-
 	// asset cache details
 	fmt.Printf("[CONFIG] AssetBucket     = [%s]\n", cfg.AssetBucket)
 	fmt.Printf("[CONFIG] AssetFilesystem = [%s]\n", cfg.AssetFilesystem)
-
-	// event bus definitions
-	//fmt.Printf("[CONFIG] BusName         = [%s]\n", cfg.BusName)
-	//fmt.Printf("[CONFIG] BusEventSource  = [%s]\n", cfg.BusEventSource)
 
 	return &cfg, nil
 }

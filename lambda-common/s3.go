@@ -77,7 +77,7 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 
 func (c *uvaS3Client) s3Head(bucket string, key string) (*s3.HeadObjectOutput, error) {
 
-	//fmt.Printf("head [%s/%s]\n", bucket, key)
+	//fmt.Printf("INFO: head [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	res, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
@@ -86,13 +86,13 @@ func (c *uvaS3Client) s3Head(bucket string, key string) (*s3.HeadObjectOutput, e
 	})
 
 	duration := time.Since(start)
-	fmt.Printf("head [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
+	fmt.Printf("INFO: head [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
 	return res, err
 }
 
 func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types.ObjectAttributes) (s3.GetObjectAttributesOutput, error) {
 
-	//fmt.Printf("get attribs [%s/%s]\n", bucket, key)
+	//fmt.Printf("INFO: get attribs [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	res, err := c.client.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
@@ -102,7 +102,7 @@ func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types
 	})
 
 	duration := time.Since(start)
-	fmt.Printf("get attribs [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
+	fmt.Printf("INFO: get attribs [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
 	return *res, err
 }
 
@@ -180,6 +180,21 @@ func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
 
 	duration := time.Since(start)
 	fmt.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)\n", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
+	return err
+}
+
+func (s *uvaS3Client) s3Remove(bucket string, key string) error {
+
+	fmt.Printf("INFO: deleting [%s/%s]", bucket, key)
+	start := time.Now()
+
+	_, err := s.client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: &bucket,
+		Key:    &key,
+	})
+
+	duration := time.Since(start)
+	fmt.Printf("INFO: delete [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), s.statusText(err))
 	return err
 }
 

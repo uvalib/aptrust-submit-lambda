@@ -69,33 +69,40 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// S3 assets in <bucket>/<clientId>/<submissionId>/...
 	pathPrefix := path.Join(be.ClientId, wf.SubmissionId)
 
-	// get a complete list of all the files included in the specified submission
-	s3files, err := s3Client.s3List(cfg.AssetBucket, pathPrefix)
+	// if we are doing a bag purge, add the bag name to the suffix
+	if be.EventName == uvaaptsbus.EventCommandBagPurge {
+		pathPrefix = path.Join(pathPrefix, wf.BagId)
+	}
+
+	// get a complete list of all the files included in the specified path
+	keys, err := s3Client.s3List(cfg.AssetBucket, pathPrefix)
 	if err != nil {
-		fmt.Printf("ERROR: listing S3 assets (%s)\n", err.Error())
-		//return err
+		fmt.Printf("WARNING: listing S3 assets (%s), continuing\n", err.Error())
 	}
 
-	fmt.Printf("INFO: located %d assets in [s3://%s/%s]\n", len(s3files), cfg.AssetBucket, pathPrefix)
+	fmt.Printf("INFO: located %d assets in [s3://%s/%s]\n", len(keys), cfg.AssetBucket, pathPrefix)
 
-	dir := path.Join(cfg.AssetFilesystem, pathPrefix)
-	de, err := os.ReadDir(dir)
+	efsDir := path.Join(cfg.AssetFilesystem, pathPrefix)
+	contents, err := os.ReadDir(efsDir)
 	if err != nil {
-		fmt.Printf("ERROR: reading [%s] (%s)\n", dir, err.Error())
-		//return err
+		fmt.Printf("WARNING: listing cache assets (%s), continuing\n", err.Error())
 	}
 
-	fmt.Printf("INFO: located %d assets in [%s]\n", len(de), dir)
+	fmt.Printf("INFO: located %d assets in cache [%s]\n", len(contents), efsDir)
 
-	for _, d := range de {
-		//err = os.RemoveAll(path.Join(dir, d.Name()))
-		fmt.Printf("INFO: %s\n", path.Join(dir, d.Name()))
-		//if err != nil {
-		//	return err
-		//}
+	// purge the S3 assets
+	err = purgeS3Assets(s3Client, cfg.AssetBucket, keys)
+	if err != nil {
+		fmt.Printf("WARNING: purging S3 assets (%s), continuing\n", err.Error())
 	}
 
-	return err
+	// purge the cache
+	err = purgeCacheAssets(efsDir, contents)
+	if err != nil {
+		fmt.Printf("WARNING: purging cache assets (%s), continuing\n", err.Error())
+	}
+
+	return nil
 }
 
 //
