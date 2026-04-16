@@ -3,14 +3,14 @@ module github.com/uvalib/apt-submit-purge
 go 1.26.0
 
 // for local development
-replace github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus => ../../aptrust-submit-bus-definitions/uvaaptsbus
+//replace github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus => ../../aptrust-submit-bus-definitions/uvaaptsbus
 
 require (
 	github.com/aws/aws-lambda-go v1.54.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.14
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.13
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.99.0
-	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260408145629-63e65369a282
+	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260416141430-5517dd05fe30
 )
 
 require (

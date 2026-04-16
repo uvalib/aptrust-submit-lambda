@@ -48,5 +48,9 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8s=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260408145629-63e65369a282 h1:5NmRlN+J04iBVUYyngumKw3bvLkwkkRPp1iVlF5znlA=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260408145629-63e65369a282/go.mod h1:7R2aqbx1YWfJhh3xWuAMvs2YLO2OcZGUmLsqbHMlp4Y=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260416141430-5517dd05fe30 h1:qClIVYpM3/67wCHDVaXZ24ziBy904VBRR5zCnTpQ5Vs=
+github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260416141430-5517dd05fe30/go.mod h1:7R2aqbx1YWfJhh3xWuAMvs2YLO2OcZGUmLsqbHMlp4Y=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
