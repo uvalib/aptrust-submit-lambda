@@ -40,6 +40,10 @@ phases:
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-ingest-status
       - make linux
       #
+      # apt-submit-purge function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-purge
+      - make linux
+      #
       # apt-submit-mailer function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-mailer
       - make linux
@@ -77,6 +81,9 @@ phases:
       #
       # apt-submit-ingest-status function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-ingest-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-ingest-status/deployment.zip --quiet
+      #
+      # apt-submit-purge function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-purge/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-purge/deployment.zip --quiet
       #
       # apt-submit-mailer function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-mailer/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-mailer/deployment.zip --quiet

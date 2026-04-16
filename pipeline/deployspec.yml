@@ -32,6 +32,9 @@ phases:
       # apt-submit-ingest-status function
       - aws lambda update-function-code --function-name uva-apt-submit-ingest-status-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-ingest-status/deployment.zip
       #
+      # apt-submit-purge function
+      #- aws lambda update-function-code --function-name uva-apt-submit-purge-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-purge/deployment.zip
+      #
       # apt-submit-mailer function
       - aws lambda update-function-code --function-name uva-apt-submit-mailer-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-mailer/deployment.zip
       #
