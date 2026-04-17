@@ -16,8 +16,8 @@ import (
 	"math/rand"
 )
 
-// after this period we will log a warning about a stale ingest
-var stalePendingThreshold = 24 * time.Hour
+// after this period we will log a warning about a stalled ingest
+var stalledPendingThreshold = 24 * time.Hour
 
 func process(messageId string, messageSrc string, rawMsg json.RawMessage) error {
 
@@ -92,8 +92,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 						return err
 					}
 					age := time.Since(bstat.Updated)
-					if age > stalePendingThreshold {
-						fmt.Printf("WARNING: ingest stale for <%s/%s> (submitted: %s)\n", bg.Submission, bg.Name, bstat.Updated)
+					if age > stalledPendingThreshold {
+						fmt.Printf("WARNING: ingest stalled for <%s/%s> (submitted: %s)\n", bg.Submission, bg.Name, bstat.Updated)
 					}
 
 				case AptStatusStarted:
