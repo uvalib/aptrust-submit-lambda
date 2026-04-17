@@ -106,6 +106,10 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 			if err != nil {
 				return err
 			}
+			err = publishWorkflowEvent(bus, uvaaptsbus.EventSubmissionComplete, busEvent.ClientId, workflowEvent.SubmissionId, "", "")
+			if err != nil {
+				return err
+			}
 		}
 	}
 
