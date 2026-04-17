@@ -26,6 +26,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionComplete: // submission complete and ready to purge
 	case uvaaptsbus.EventCommandSubmissionPurge: // submission complete and ready to purge
+	case uvaaptsbus.EventBagAccepted: // bag accepted by APT
 	case uvaaptsbus.EventCommandBagPurge: // bag complete and ready to purge
 	default:
 		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
@@ -54,23 +55,19 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		return err
 	}
 
+	// assets in [bucket|cache]/<clientId>/<submissionId>/[bagId]...
+	pathPrefix := path.Join(be.ClientId, wf.SubmissionId)
+
 	// event specific processing
 	switch be.EventName {
 	//
 	// submission events
 	//
 	case uvaaptsbus.EventSubmissionComplete, uvaaptsbus.EventCommandSubmissionPurge:
-		//err = handleSubmissionValidate(eventBus, be, wf, dao)
+		fmt.Printf("INFO: purging assets for submission <%s>\n", wf.SubmissionId)
 
-	case uvaaptsbus.EventCommandBagPurge:
-		//err = handleSubmissionValidateFail(eventBus, be, wf, dao)
-	}
-
-	// S3 assets in <bucket>/<clientId>/<submissionId>/...
-	pathPrefix := path.Join(be.ClientId, wf.SubmissionId)
-
-	// if we are doing a bag purge, add the bag name to the suffix
-	if be.EventName == uvaaptsbus.EventCommandBagPurge {
+	case uvaaptsbus.EventBagAccepted, uvaaptsbus.EventCommandBagPurge:
+		fmt.Printf("INFO: purging assets for bag <%s/%s>\n", wf.SubmissionId, wf.BagId)
 		pathPrefix = path.Join(pathPrefix, wf.BagId)
 	}
 
@@ -80,26 +77,32 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		fmt.Printf("WARNING: listing S3 assets (%s), continuing\n", err.Error())
 	}
 
-	fmt.Printf("INFO: located %d assets in [s3://%s/%s]\n", len(keys), cfg.AssetBucket, pathPrefix)
-
 	efsDir := path.Join(cfg.AssetFilesystem, pathPrefix)
 	contents, err := os.ReadDir(efsDir)
 	if err != nil {
 		fmt.Printf("WARNING: listing cache assets (%s), continuing\n", err.Error())
 	}
 
-	fmt.Printf("INFO: located %d assets in cache [%s]\n", len(contents), efsDir)
-
 	// purge the S3 assets
-	err = purgeS3Assets(s3Client, cfg.AssetBucket, keys)
-	if err != nil {
-		fmt.Printf("WARNING: purging S3 assets (%s), continuing\n", err.Error())
+	if len(keys) != 0 {
+		fmt.Printf("INFO: located %d assets in [s3://%s/%s]\n", len(keys), cfg.AssetBucket, pathPrefix)
+		err = purgeS3Assets(s3Client, cfg.AssetBucket, keys)
+		if err != nil {
+			fmt.Printf("WARNING: purging S3 assets (%s), continuing\n", err.Error())
+		}
+	} else {
+		fmt.Printf("WARNING: no S3 assets located\n")
 	}
 
 	// purge the cache
-	err = purgeCacheAssets(efsDir, contents)
-	if err != nil {
-		fmt.Printf("WARNING: purging cache assets (%s), continuing\n", err.Error())
+	if len(contents) != 0 {
+		fmt.Printf("INFO: located %d assets in cache [%s]\n", len(contents), efsDir)
+		err = purgeCacheAssets(efsDir, contents)
+		if err != nil {
+			fmt.Printf("WARNING: purging cache assets (%s), continuing\n", err.Error())
+		}
+	} else {
+		fmt.Printf("WARNING: no cache assets located\n")
 	}
 
 	return nil
