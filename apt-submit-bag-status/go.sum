@@ -8,7 +8,7 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8s=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
-github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260406115747-e2cb828f399f h1:uf5sRaH6/r8X9J+eea7kV4A8ltnEPptA0eIAalB7FuQ=
-github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260406115747-e2cb828f399f/go.mod h1:hjT1AxUZ9UKtAJuSq32WmBrbnne4MzgUFP3jm++gAvM=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260415184441-88e4458b0ef4 h1:+Reg1UecA/YXoXn3ZxEWXLktwdiKEOx1JrCLZ6URcRs=
+github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260415184441-88e4458b0ef4/go.mod h1:hjT1AxUZ9UKtAJuSq32WmBrbnne4MzgUFP3jm++gAvM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
