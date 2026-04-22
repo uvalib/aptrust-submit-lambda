@@ -75,13 +75,22 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 				// get the status, ignore errors
 				status, _ := getAptStatus(cfg, httpClient, bg)
 				switch status {
-				case AptStatusCancelled, AptStatusFailed, AptStatusSuspended:
-					// something terminal happened, fire the rejected event
-					_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagRejected, "", bg.Submission, bg.Name, "")
+				// interesting statuses that generate events
+				case AptStatusCancelled, AptStatusFailed, AptStatusSuspended, AptStatusSuccess:
 
-				case AptStatusSuccess:
-					// victory, fire the accepted event
-					_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagAccepted, "", bg.Submission, bg.Name, "")
+					// get the submission details for the bag
+					sub, err := dao.GetSubmissionByIdentifier(bg.Submission)
+					if err != nil {
+						return err
+					}
+
+					if status == AptStatusSuccess {
+						// victory, fire the accepted event
+						_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagAccepted, sub.Client, bg.Submission, bg.Name, "")
+					} else {
+						// something terminal happened, fire the rejected event
+						_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagRejected, sub.Client, bg.Submission, bg.Name, "")
+					}
 
 				case AptStatusPending:
 
@@ -106,7 +115,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 					fmt.Printf("ERROR: unexpected status for bag <%s/%s> (%s)\n", bg.Submission, bg.Name, status)
 				}
 			} else {
-				fmt.Printf("WARNING: bag <%s/%s> has an empty etag, cannot check for status\n", bg.Submission, bg.Name)
+				fmt.Printf("ERROR: bag <%s/%s> has an empty etag, cannot check for status\n", bg.Submission, bg.Name)
 			}
 		}
 	}
