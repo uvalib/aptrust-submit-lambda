@@ -70,7 +70,7 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 				return nil, err
 			}
 
-			fmt.Printf("ERROR: %s %s failed with error, retrying (%s)\n", req.Method, url, err)
+			fmt.Printf("WARNING: %s %s failed with error, retrying (%s)\n", req.Method, url, err)
 
 			// sleep for a bit before retrying
 			time.Sleep(httpRetrySleepTime)
