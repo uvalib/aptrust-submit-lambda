@@ -18,7 +18,6 @@ import (
 type Request struct {
 	ClientIdentifier string `json:"cid"`        // the client identifier
 	Collection       string `json:"collection"` // the collection name for the submission (optional)
-	Storage          string `json:"storage"`    // the APT storage to use for this submission (optional)
 }
 
 type Response struct {
@@ -81,17 +80,13 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 		r.Collection = sid
 	}
 
-	if len(r.Storage) == 0 {
-		r.Storage = c.DefaultStorage
-	}
-
 	// create the new submission
-	err = dao.AddSubmission(sid, c.Identifier, r.Collection, r.Storage)
+	err = dao.AddSubmission(sid, c.Identifier, r.Collection, c.DefaultStorage)
 	if err != nil {
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
 	}
 
-	fmt.Printf("DEBUG: new submission [%s], collection name [%s], storage [%s]\n", sid, r.Collection, r.Storage)
+	fmt.Printf("DEBUG: new submission [%s], collection name [%s]\n", sid, r.Collection)
 
 	// construct the response
 	response := Response{}
