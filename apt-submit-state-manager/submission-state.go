@@ -60,6 +60,25 @@ func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusBuilding)
 }
 
+// submission was abandoned
+func handleSubmissionAbandoned(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	// update the state of all the bags
+	bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+	for _, b := range bags {
+		err = dao.UpdateBagState(b.Name, workflowEvent.SubmissionId, uvaaptsdao.BagStatusAbandoned)
+		if err != nil {
+			return err
+		}
+	}
+
+	// update the state of the submission
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusAbandoned)
+}
+
 //
 // end of file
 //
