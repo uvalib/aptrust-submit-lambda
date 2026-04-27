@@ -13,6 +13,9 @@ CREATE TABLE storage_options (
    created_at  timestamp DEFAULT NOW()
 );
 
+-- create the storage_options index(s)
+CREATE UNIQUE INDEX storage_options_distinct_idx ON storage_options(value);
+
 INSERT INTO storage_options(value, label) VALUES('Standard', 'Standard');
 INSERT INTO storage_options(value, label) VALUES('Glacier-Deep-OH', 'Glacier-Deep-OH');
 INSERT INTO storage_options(value, label) VALUES('Glacier-VA', 'Glacier-VA');
