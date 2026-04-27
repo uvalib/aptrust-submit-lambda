@@ -9,7 +9,7 @@ import (
 func handleBagBuilt(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusReady)
+	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusReady)
 }
 
 // bag was submitted to APT
@@ -22,7 +22,7 @@ func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent,
 	}
 
 	// update the state of the bag
-	err = dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusPendingIngest)
+	err = dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusPendingIngest)
 	if err != nil {
 		return err
 	}
@@ -34,9 +34,9 @@ func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent,
 	}
 
 	// if the status is 'building' update to 'pending-ingest'
-	if ss.State == SubmissionStatusBuilding {
+	if ss.State == uvaaptsdao.SubmissionStatusBuilding {
 		// update the status of the submission
-		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusPendingIngest)
+		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusPendingIngest)
 	}
 	return err
 }
@@ -45,7 +45,7 @@ func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent,
 func handleBagRejected(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the bag
-	err := dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, BagStatusError)
+	err := dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusError)
 	if err != nil {
 		return err
 	}
@@ -57,9 +57,9 @@ func handleBagRejected(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 	}
 
 	// if the status is 'pending-ingest', update to 'incomplete'
-	if ss.State == SubmissionStatusPendingIngest {
+	if ss.State == uvaaptsdao.SubmissionStatusPendingIngest {
 		// update the status of the submission
-		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusIncomplete)
+		err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusIncomplete)
 	}
 	return err
 }
@@ -79,7 +79,7 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 	}
 
 	// if the status is 'pending-ingest', check to see if all the bags are done
-	if ss.State == SubmissionStatusPendingIngest {
+	if ss.State == uvaaptsdao.SubmissionStatusPendingIngest {
 
 		// check to see how many bags remain in the pending state... if none
 		// update the submission state to 'complete'
@@ -94,7 +94,7 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 				if err != nil {
 					return err
 				}
-				if bs.State == SubmissionStatusPendingIngest {
+				if bs.State == uvaaptsdao.SubmissionStatusPendingIngest {
 					allDone = false
 					break
 				}
@@ -102,7 +102,7 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 		}
 		if allDone == true {
 			// update the status of the submission
-			err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusComplete)
+			err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusComplete)
 			if err != nil {
 				return err
 			}
@@ -114,7 +114,7 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 	}
 
 	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, bagStatusComplete)
+	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusComplete)
 }
 
 //

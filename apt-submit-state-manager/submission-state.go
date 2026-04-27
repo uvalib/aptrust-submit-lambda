@@ -9,13 +9,13 @@ import (
 func handleSubmissionValidate(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusValidating)
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusValidating)
 }
 
 func handleSubmissionValidateFail(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusError)
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusError)
 }
 
 // submission needs to be reconciled
@@ -30,21 +30,21 @@ func handleSubmissionReconcileFail(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.U
 		return err
 	}
 	for _, b := range bags {
-		err = dao.UpdateBagState(b.Name, workflowEvent.SubmissionId, BagStatusError)
+		err = dao.UpdateBagState(b.Name, workflowEvent.SubmissionId, uvaaptsdao.BagStatusError)
 		if err != nil {
 			return err
 		}
 	}
 
 	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusError)
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusError)
 }
 
 // submission needs to be approved
 func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusPendingApproval)
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusPendingApproval)
 }
 
 // submission was approved
@@ -57,7 +57,7 @@ func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 	}
 
 	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, SubmissionStatusBuilding)
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusBuilding)
 }
 
 //

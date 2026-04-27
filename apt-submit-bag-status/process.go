@@ -64,7 +64,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the bag state
 	bs, err := dao.GetBagStateByName(bid)
 	if err != nil {
-		if errors.As(err, &ErrBagNotFound) {
+		if errors.As(err, &uvaaptsdao.ErrBagNotFound) {
 			return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: http.StatusNotFound}, nil
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)

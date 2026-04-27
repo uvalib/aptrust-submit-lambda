@@ -69,7 +69,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the client details
 	cli, err := dao.GetClientByIdentifier(r.ClientIdentifier)
 	if err != nil {
-		if errors.As(err, &ErrClientNotFound) {
+		if errors.As(err, &uvaaptsdao.ErrClientNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
@@ -78,7 +78,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the submission
 	sub, err := dao.GetSubmissionByIdentifier(r.SubmissionIdentifier)
 	if err != nil {
-		if errors.As(err, &ErrSubmissionNotFound) {
+		if errors.As(err, &uvaaptsdao.ErrSubmissionNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
@@ -133,7 +133,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// construct the response
 	response := Response{}
 	response.Submission = r.SubmissionIdentifier
-	response.Status = SubmissionStatusValidating
+	response.Status = uvaaptsdao.SubmissionStatusValidating
 	response.Updated = time.Now().UTC()
 
 	buf, err := json.Marshal(response)

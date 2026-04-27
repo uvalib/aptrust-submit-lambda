@@ -4,35 +4,10 @@
 
 package main
 
-import "fmt"
-
-// error definitions
-var ErrClientNotFound = fmt.Errorf("client not found")
-var ErrSubmissionNotFound = fmt.Errorf("submission not found")
-var ErrBagNotFound = fmt.Errorf("bag not found")
-
-// submission status definitions
-var SubmissionStatusRegistered = "registered"
-var SubmissionStatusValidating = "validating"
-var SubmissionStatusBuilding = "building"
-var SubmissionStatusPendingApproval = "pending-approval"
-var SubmissionStatusSubmitting = "submitting"
-var SubmissionStatusPendingIngest = "pending-ingest"
-var SubmissionStatusError = "error"
-var SubmissionStatusIncomplete = "incomplete"
-var SubmissionStatusComplete = "complete"
-
-// bag status definitions
-var BagStatusRegistered = "registered"
-var BagStatusBuilding = "building"
-var BagStatusReady = "ready"
-var BagStatusSubmitting = "submitting"
-var BagStatusPendingIngest = "pending-ingest"
-var BagStatusError = "error"
-var bagStatusComplete = "complete"
-
-// other definitions
+// the temp filesystem
 var tempFilesystem = "/tmp"
+
+// the name of the manifest file
 var manifestName = "manifest-md5.txt"
 
 //

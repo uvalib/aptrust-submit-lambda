@@ -4,8 +4,8 @@ go 1.26.1
 
 require (
 	github.com/aws/aws-lambda-go v1.54.0
-	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260416141430-5517dd05fe30
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260415184441-88e4458b0ef4
+	github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus v0.0.0-20260427134036-112f80baa79f
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260427140620-2e49452502e3
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
@@ -24,7 +24,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.20 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.42.0 // indirect
-	github.com/aws/smithy-go v1.25.0 // indirect
+	github.com/aws/smithy-go v1.25.1 // indirect
 	github.com/lib/pq v1.12.3 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 )
