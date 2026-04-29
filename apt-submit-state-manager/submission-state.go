@@ -42,39 +42,6 @@ func handleSubmissionReconcileFail(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.U
 	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusError)
 }
 
-// submission needs to be approved
-func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-
-	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusPendingApproval)
-}
-
-// submission was approved
-func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-
-	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
-	if err != nil {
-		fmt.Printf("ERROR: getting submission state (%s)\n", err.Error())
-		return err
-	}
-
-	// validate that the submission state is as expected
-	if ss.State != uvaaptsdao.SubmissionStatusPendingApproval {
-		err = fmt.Errorf("submission [%s] in incorrect state for approvals (%s)", workflowEvent.SubmissionId, ss.State)
-		fmt.Printf("ERROR: %s\n", err.Error())
-		return err
-	}
-
-	// audit the approval cos the approver is contained in this event
-	err = dao.AddApproval(workflowEvent.SubmissionId, workflowEvent.Extra)
-	if err != nil {
-		return err
-	}
-
-	// update the state of the submission
-	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusBuilding)
-}
-
 // submission was abandoned
 func handleSubmissionAbandoned(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 

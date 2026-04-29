@@ -27,9 +27,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionValidateFail: // validation failed
 	//case uvaaptsbus.EventSubmissionReconcile: // submission ready to reconcile
 	case uvaaptsbus.EventSubmissionReconcileFail: // reconciliation failed
-	case uvaaptsbus.EventSubmissionApprove: // submission to be approved
-	case uvaaptsbus.EventSubmissionApproved: // submission approved (or auto approved)
 	case uvaaptsbus.EventSubmissionAbandoned: // submission abandoned
+		// approval events are handled in the approve lambda, not here
 
 	case uvaaptsbus.EventBagBuilt: // bag built
 	case uvaaptsbus.EventBagSubmitted: // bag submitted
@@ -81,12 +80,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//case uvaaptsbus.EventSubmissionReconcile: err = handleSubmissionReconcile(eventBus, be, wf, dao)
 	case uvaaptsbus.EventSubmissionReconcileFail:
 		err = handleSubmissionReconcileFail(eventBus, be, wf, dao)
-
-	case uvaaptsbus.EventSubmissionApprove:
-		err = handleSubmissionApprove(eventBus, be, wf, dao)
-
-	case uvaaptsbus.EventSubmissionApproved:
-		err = handleSubmissionApproved(eventBus, be, wf, dao)
 
 	case uvaaptsbus.EventSubmissionAbandoned:
 		err = handleSubmissionAbandoned(eventBus, be, wf, dao)

@@ -25,7 +25,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionApprove:
 	case uvaaptsbus.EventSubmissionApproved:
-	case uvaaptsbus.EventSubmissionDeclined:
 	default:
 		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
 		return nil
@@ -64,8 +63,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		err = handleSubmissionApprove(eventBus, be, wf, dao)
 	case uvaaptsbus.EventSubmissionApproved:
 		err = handleSubmissionApproval(eventBus, be, wf, dao)
-	case uvaaptsbus.EventSubmissionAbandoned:
-		err = handleSubmissionAbandoned(eventBus, be, wf, dao)
 	}
 
 	return err
