@@ -64,8 +64,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		err = handleSubmissionApprove(eventBus, be, wf, dao)
 	case uvaaptsbus.EventSubmissionApproved:
 		err = handleSubmissionApproval(eventBus, be, wf, dao)
-	case uvaaptsbus.EventSubmissionDeclined:
-		err = handleSubmissionDeclined(eventBus, be, wf, dao)
+	case uvaaptsbus.EventSubmissionAbandoned:
+		err = handleSubmissionAbandoned(eventBus, be, wf, dao)
 	}
 
 	return err

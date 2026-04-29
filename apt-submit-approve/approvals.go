@@ -28,6 +28,19 @@ func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusE
 // submission was approved
 func handleSubmissionApproval(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		fmt.Printf("ERROR: getting submission state (%s)\n", err.Error())
+		return err
+	}
+
+	// validate that the submission state is as expected
+	if ss.State != uvaaptsdao.SubmissionStatusPendingApproval {
+		err = fmt.Errorf("submission [%s] in incorrect state for approvals (%s)", workflowEvent.SubmissionId, ss.State)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
 	// get all the bags for this submission
 	bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
 	if err != nil {
@@ -47,8 +60,8 @@ func handleSubmissionApproval(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 	return res
 }
 
-// submission was declined
-func handleSubmissionDeclined(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+// submission was abandoned
+func handleSubmissionAbandoned(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 	// not sure what to do here yet...
 	return nil
 }

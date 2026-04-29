@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
@@ -50,8 +52,21 @@ func handleSubmissionApprove(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusE
 // submission was approved
 func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		fmt.Printf("ERROR: getting submission state (%s)\n", err.Error())
+		return err
+	}
+
+	// validate that the submission state is as expected
+	if ss.State != uvaaptsdao.SubmissionStatusPendingApproval {
+		err = fmt.Errorf("submission [%s] in incorrect state for approvals (%s)", workflowEvent.SubmissionId, ss.State)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
 	// audit the approval cos the approver is contained in this event
-	err := dao.AddApproval(workflowEvent.SubmissionId, workflowEvent.Extra)
+	err = dao.AddApproval(workflowEvent.SubmissionId, workflowEvent.Extra)
 	if err != nil {
 		return err
 	}
@@ -62,6 +77,19 @@ func handleSubmissionApproved(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 
 // submission was abandoned
 func handleSubmissionAbandoned(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		fmt.Printf("ERROR: getting submission state (%s)\n", err.Error())
+		return err
+	}
+
+	// validate that the submission state is as expected
+	if ss.State != uvaaptsdao.SubmissionStatusPendingApproval {
+		err = fmt.Errorf("submission [%s] in incorrect state for abandon (%s)", workflowEvent.SubmissionId, ss.State)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
 
 	// update the state of all the bags
 	bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
