@@ -10,21 +10,20 @@ import (
 	"strings"
 )
 
-// from the list of files included in the submission, find the manifests to determine which bags
-// are included
+// from the list of files included in the submission, determine which bags are included
 func findIncludedBags(prefix string, suppliedFiles []string) []string {
 	bags := make([]string, 0)
 
+	// go through the list of files
 	for _, fname := range suppliedFiles {
 
-		// is this a manifest
-		if strings.HasSuffix(fname, manifestName) {
-			// strip the prefix
-			s := strings.TrimPrefix(fname, prefix)
+		// strip the prefix
+		s := strings.TrimPrefix(fname, prefix)
 
-			// split with the seperator
-			bits := strings.Split(s, "/")
-			if len(bits) == 3 {
+		// split with the seperator
+		bits := strings.Split(s, "/")
+		if len(bits) == 3 {
+			if slices.Contains(bags, bits[1]) == false {
 				// save the bag name
 				bags = append(bags, bits[1])
 			}
