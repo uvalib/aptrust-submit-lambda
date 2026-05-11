@@ -7,20 +7,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
-	//"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 type uvaS3Client struct {
-	client     *s3.Client
-	downloader *manager.Downloader
-	uploader   *manager.Uploader
+	client *s3.Client
 }
 
 func newS3Client() (*uvaS3Client, error) {
@@ -30,8 +24,6 @@ func newS3Client() (*uvaS3Client, error) {
 	}
 	c := uvaS3Client{}
 	c.client = s3.NewFromConfig(cfg)
-	c.downloader = manager.NewDownloader(c.client)
-	c.uploader = manager.NewUploader(c.client)
 	return &c, nil
 }
 
@@ -73,114 +65,6 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 	duration := time.Since(start)
 	fmt.Printf("INFO: s3 list [%s/%s] complete in %0.2f seconds\n", bucket, key, duration.Seconds())
 	return result, nil
-}
-
-func (c *uvaS3Client) s3Head(bucket string, key string) (*s3.HeadObjectOutput, error) {
-
-	//fmt.Printf("INFO: head [%s/%s]\n", bucket, key)
-	start := time.Now()
-
-	res, err := c.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
-		Bucket: &bucket,
-		Key:    &key,
-	})
-
-	duration := time.Since(start)
-	fmt.Printf("INFO: head [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
-	return res, err
-}
-
-func (c *uvaS3Client) s3GetAttributes(bucket string, key string, attribs []types.ObjectAttributes) (s3.GetObjectAttributesOutput, error) {
-
-	//fmt.Printf("INFO: get attribs [%s/%s]\n", bucket, key)
-	start := time.Now()
-
-	res, err := c.client.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
-		Bucket:           &bucket,
-		Key:              &key,
-		ObjectAttributes: attribs,
-	})
-
-	duration := time.Since(start)
-	fmt.Printf("INFO: get attribs [%s/%s] complete in %0.2f seconds (%s)\n", bucket, key, duration.Seconds(), c.statusText(err))
-	return *res, err
-}
-
-func (c *uvaS3Client) s3Put(bucket string, key string, location string) error {
-
-	// validate inbound parameters
-	//if impl.validateS3Obj(obj) == false || len(location) == 0 {
-	//	return ErrBadParameter
-	//}
-
-	//source := fmt.Sprintf("s3://%s/%s", obj.BucketName(), obj.KeyName())
-
-	//impl.logInfo(fmt.Sprintf("put from %s to %s", location, source))
-
-	// open the file
-	file, err := os.Open(location)
-	if err != nil {
-		// assume the error is file not found... probably reasonable
-		return os.ErrNotExist
-	}
-	defer file.Close()
-
-	// get the filesize
-	//s, err := file.Stat()
-	//if err != nil {
-	//	return err
-	//}
-	//fileSize := s.Size()
-
-	// Upload the file to S3.
-	//start := time.Now()
-	_, err = c.uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: &bucket,
-		Key:    &key,
-		Body:   file,
-	})
-	if err != nil {
-		return err
-	}
-
-	//duration := time.Since(start)
-	//impl.logInfo(fmt.Sprintf("put %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec)", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds()))
-	return nil
-}
-
-func (c *uvaS3Client) s3Get(bucket string, key string, location string) error {
-
-	source := fmt.Sprintf("s3://%s/%s", bucket, key)
-	//fmt.Printf("INFO: getting %s to %s\n", source, location)
-
-	file, err := os.OpenFile(location, os.O_RDWR|os.O_CREATE, 0755)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	start := time.Now()
-	fileSize, err := c.downloader.Download(context.TODO(), file, &s3.GetObjectInput{
-		Bucket: &bucket,
-		Key:    &key,
-	})
-
-	//	if err != nil {
-	//		return err
-	//	}
-
-	//	// I think there are times when the download runs out of space but it is not reported as an error so
-	//	// we validate the expected file size against the actually downloaded size
-	//if obj.Size() != -1 && obj.Size() != fileSize {
-
-	// remove the file
-	//	_ = os.Remove(location)
-	//	return fmt.Errorf("download failure. expected %d bytes, received %d bytes", obj.Size(), fileSize)
-	//}
-
-	duration := time.Since(start)
-	fmt.Printf("INFO: get of %s complete in %0.2f seconds (%d bytes, %0.2f bytes/sec) (%s)\n", source, duration.Seconds(), fileSize, float64(fileSize)/duration.Seconds(), c.statusText(err))
-	return err
 }
 
 func (s *uvaS3Client) s3Remove(bucket string, key string) error {
