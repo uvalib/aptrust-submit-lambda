@@ -8,7 +8,7 @@ go 1.26.0
 require (
 	github.com/aws/aws-lambda-go v1.54.0
 	github.com/rs/xid v1.6.0
-	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260428175519-052ec7690ea3
+	github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao v0.0.0-20260511135024-200471e7b048
 )
 
 require github.com/lib/pq v1.12.3 // indirect
