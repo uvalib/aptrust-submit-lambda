@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
@@ -16,7 +18,10 @@ func handleBagBuilt(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, wor
 func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
 	// apply the etag cos it is contained in this event
-	err := dao.UpdateBagETag(workflowEvent.BagId, workflowEvent.SubmissionId, workflowEvent.Extra)
+	extra := BagSubmittedEventExtraPayload{}
+	_ = json.Unmarshal([]byte(workflowEvent.Extra), &extra)
+
+	err := dao.UpdateBagETag(workflowEvent.BagId, workflowEvent.SubmissionId, extra.ETag)
 	if err != nil {
 		return err
 	}
