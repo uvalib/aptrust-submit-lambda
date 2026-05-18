@@ -63,10 +63,12 @@ func handleSubmissionApproval(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 	}
 
 	// update the storage for this submission
-	err = dao.UpdateSubmissionStorage(workflowEvent.SubmissionId, extra.Storage)
-	if err != nil {
-		fmt.Printf("ERROR: updating storage for [%s], continuing (%s)\n", workflowEvent.SubmissionId, err.Error())
-		return err
+	if len(extra.Storage) != 0 {
+		err = dao.UpdateSubmissionStorage(workflowEvent.SubmissionId, extra.Storage)
+		if err != nil {
+			fmt.Printf("ERROR: updating storage for [%s], continuing (%s)\n", workflowEvent.SubmissionId, err.Error())
+			return err
+		}
 	}
 
 	// get all the bags for this submission
