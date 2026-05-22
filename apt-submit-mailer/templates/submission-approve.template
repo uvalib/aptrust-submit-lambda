@@ -1,10 +1,10 @@
 Dear {{.Recipient}},
 <p>
 
-Approval required for submission {{.Submission}};
+Approval is required for {{.Client}} submission {{.Submission}};
 <p>
 
-Please go here to approve: {{.Url}}
+To review and approve: {{.Url}}
 <p>
 
 Best Regards,<br>

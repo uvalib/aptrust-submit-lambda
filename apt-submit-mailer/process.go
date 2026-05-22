@@ -58,13 +58,14 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	// assume the recipient is the administrator
 	recipient := cfg.AdminEmail
 
+	// get the client information
+	cli, err := dao.GetClientByIdentifier(be.ClientId)
+	if err != nil {
+		return err
+	}
+
 	// if this is (potentially) an approval email, ensure this is not an auto-approve submission
 	if be.EventName == uvaaptsbus.EventSubmissionApprove {
-		// get the client information
-		cli, err := dao.GetClientByIdentifier(be.ClientId)
-		if err != nil {
-			return err
-		}
 
 		// this will be an auto-approval so abandon the mailer
 		if len(cli.ApprovalEmail) == 0 {
@@ -77,7 +78,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	}
 
 	// render the email body
-	subject, body, err := renderSubjectAndBody(cfg, recipient, be, wf)
+	subject, body, err := renderSubjectAndBody(cfg, cli.Name, recipient, be, wf)
 	if err != nil {
 		fmt.Printf("ERROR: rendering email content (%s)\n", err.Error())
 		return err

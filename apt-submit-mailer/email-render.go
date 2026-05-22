@@ -7,6 +7,7 @@ package main
 import (
 	"bytes"
 	"embed"
+	"fmt"
 	"strings"
 	"text/template"
 
@@ -18,25 +19,26 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
-func renderSubjectAndBody(cfg *Config, recipient string, be *uvaaptsbus.UvaBusEvent, wf *uvaaptsbus.UvaWorkflowEvent) (string, string, error) {
+func renderSubjectAndBody(cfg *Config, clientName string, recipient string, be *uvaaptsbus.UvaBusEvent, wf *uvaaptsbus.UvaWorkflowEvent) (string, string, error) {
 
+	client := strings.Title(clientName)
 	var templateFile string
 	var subject string
 	var url string
 	switch be.EventName {
 	case uvaaptsbus.EventSubmissionApprove:
 		templateFile = "templates/submission-approve.template"
-		subject = "APTrust submission approval required"
+		subject = fmt.Sprintf("Approval required for %s APTrust submission", client)
 		url = cfg.ApprovalUrl
 
 	case uvaaptsbus.EventSubmissionValidateFail:
 		templateFile = "templates/submission-validate-fail.template"
-		subject = "APTrust submission validation failures encountered; investigation required"
+		subject = fmt.Sprintf("Validation failures for %s APTrust submission; investigation is required", client)
 		url = cfg.ValidationFailedUrl
 
 	case uvaaptsbus.EventSubmissionReconcileFail:
 		templateFile = "templates/submission-reconcile-fail.template"
-		subject = "APTrust submission conflicts encountered; investigation required"
+		subject = fmt.Sprintf("Content conflicts identified for %s APTrust submission; investigation is required", client)
 		url = cfg.ReconciliationFailedUrl
 	}
 
@@ -61,6 +63,7 @@ func renderSubjectAndBody(cfg *Config, recipient string, be *uvaaptsbus.UvaBusEv
 		Submission string // submission identifier
 		Url        string // appropriate management URL
 		Sender     string // the sender
+		Client     string // the submitting client (work type)
 	}
 
 	//	populate the attributes
@@ -69,6 +72,7 @@ func renderSubjectAndBody(cfg *Config, recipient string, be *uvaaptsbus.UvaBusEv
 		Submission: wf.SubmissionId,
 		Url:        url,
 		Sender:     cfg.EmailSender,
+		Client:     client,
 	}
 
 	// render the template

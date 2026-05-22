@@ -1,10 +1,10 @@
 Dear {{.Recipient}},
 <p>
 
-Validation failure(s) encountered with submission {{.Submission}};
+One or more validation failures identified with {{.Client}} submission {{.Submission}};
 <p>
 
-Please go here to investigate: {{.Url}}
+To investigate: {{.Url}}
 <p>
 
 Best Regards,<br>
