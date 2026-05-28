@@ -74,6 +74,37 @@ func handleSubmissionAbandoned(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBu
 	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusAbandoned)
 }
 
+func handleSubmissionIncomplete(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
+
+	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
+	if err != nil {
+		fmt.Printf("ERROR: getting submission state (%s)\n", err.Error())
+		return err
+	}
+
+	// validate that the submission state is as expected
+	if ss.State != uvaaptsdao.SubmissionStatusError {
+		err = fmt.Errorf("submission [%s] in incorrect state for incomplete (%s)", workflowEvent.SubmissionId, ss.State)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
+	// update the state of all the bags
+	//bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+	//if err != nil {
+	//	return err
+	//}
+	//for _, b := range bags {
+	//	err = dao.UpdateBagState(b.Name, workflowEvent.SubmissionId, uvaaptsdao.BagStatusAbandoned)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+
+	// update the state of the submission
+	return dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusIncomplete)
+}
+
 //
 // end of file
 //

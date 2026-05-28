@@ -28,6 +28,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//case uvaaptsbus.EventSubmissionReconcile: // submission ready to reconcile
 	case uvaaptsbus.EventSubmissionReconcileFail: // reconciliation failed
 	case uvaaptsbus.EventSubmissionAbandoned: // submission abandoned
+	case uvaaptsbus.EventSubmissionIncomplete: // submission to be marked incomplete
 		// approval events are handled in the approve lambda, not here
 
 	case uvaaptsbus.EventBagBuilt: // bag built
@@ -84,6 +85,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionAbandoned:
 		err = handleSubmissionAbandoned(eventBus, be, wf, dao)
 
+	case uvaaptsbus.EventSubmissionIncomplete:
+		err = handleSubmissionIncomplete(eventBus, be, wf, dao)
 	//
 	// bag events
 	//
