@@ -35,10 +35,6 @@ phases:
       # apt-submit-mailer function
       - aws lambda update-function-code --function-name uva-apt-submit-mailer-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-mailer/deployment.zip
       #
-      # apt-submit-schedule function
-      - aws lambda update-function-code --function-name uva-apt-submit-schedule-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-schedule/deployment.zip
-      #
-      #
       # apt-submit-state-manager function
       - aws lambda update-function-code --function-name uva-apt-submit-state-manager-staging --s3-bucket ${deploy_bucket} --s3-key latest/apt-submit-state-manager/deployment.zip
       #
