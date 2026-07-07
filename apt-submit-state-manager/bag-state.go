@@ -7,13 +7,6 @@ import (
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
-// bag was built
-func handleBagBuilt(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
-
-	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusReady)
-}
-
 // bag was submitted to APT
 func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 

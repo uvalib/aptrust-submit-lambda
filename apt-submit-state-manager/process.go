@@ -23,8 +23,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 	// ensure this is the type of event we want to process
 	switch be.EventName {
-	case uvaaptsbus.EventSubmissionValidate: // submission ready to validate
-	case uvaaptsbus.EventSubmissionValidateFail: // validation failed
 	case uvaaptsbus.EventSubmissionReconcileFail: // reconciliation failed
 	case uvaaptsbus.EventSubmissionIncomplete: // submission to be marked incomplete
 
@@ -32,7 +30,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionApproved: // submission was approved
 	case uvaaptsbus.EventSubmissionAbandoned: // submission was abandoned
 
-	case uvaaptsbus.EventBagBuilt: // bag built
 	case uvaaptsbus.EventBagSubmitted: // bag submitted
 	case uvaaptsbus.EventBagRejected: // bag rejected (by APT)
 	case uvaaptsbus.EventBagAccepted: // bag accepted (by APT)
@@ -74,12 +71,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//
 	// submission events
 	//
-	case uvaaptsbus.EventSubmissionValidate:
-		err = handleSubmissionValidate(eventBus, be, wf, dao)
-
-	case uvaaptsbus.EventSubmissionValidateFail:
-		err = handleSubmissionValidateFail(eventBus, be, wf, dao)
-
 	case uvaaptsbus.EventSubmissionReconcileFail:
 		err = handleSubmissionReconcileFail(eventBus, be, wf, dao)
 
@@ -101,9 +92,6 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//
 	// bag events
 	//
-	case uvaaptsbus.EventBagBuilt:
-		err = handleBagBuilt(eventBus, be, wf, dao)
-
 	case uvaaptsbus.EventBagSubmitted:
 		err = handleBagSubmitted(eventBus, be, wf, dao)
 
