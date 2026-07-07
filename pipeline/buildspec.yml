@@ -36,12 +36,12 @@ phases:
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-ingest-status
       - make linux
       #
-      # apt-submit-purge function
-      - cd ${CODEBUILD_SRC_DIR}/apt-submit-purge
-      - make linux
-      #
       # apt-submit-mailer function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-mailer
+      - make linux
+      #
+      # apt-submit-purge function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-purge
       - make linux
       #
       # apt-submit-state-manager function
