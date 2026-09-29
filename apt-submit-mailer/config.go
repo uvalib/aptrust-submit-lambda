@@ -124,7 +124,7 @@ func loadConfiguration() (*Config, error) {
 	fmt.Printf("[CONFIG] SMTPHost                = [%s]\n", cfg.SMTPHost)
 	fmt.Printf("[CONFIG] SMTPPort                = [%d]\n", cfg.SMTPPort)
 	fmt.Printf("[CONFIG] SMTPUser                = [%s]\n", cfg.SMTPUser)
-	fmt.Printf("[CONFIG] SMTPPass                = [%s]\n", cfg.SMTPPass)
+	fmt.Printf("[CONFIG] SMTPPass                = [REDACTED]\n")
 
 	// database configuration
 	fmt.Printf("[CONFIG] DbHost                  = [%s]\n", cfg.DbHost)
