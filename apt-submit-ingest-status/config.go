@@ -27,6 +27,19 @@ type Config struct {
 	DbPassword string // database password
 }
 
+// these settings are meaningless at or below zero and misbehave in ways that are hard
+// to spot at runtime, so reject them up front
+func ensurePositive(env string, value int) error {
+
+	if value < 1 {
+		err := fmt.Errorf("environment variable must be a positive integer: [%s] = [%d]", env, value)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
+	return nil
+}
+
 // loadConfiguration will load the service configuration from env/cmdline
 // and return a pointer to it. Any failures are fatal.
 func loadConfiguration() (*Config, error) {
@@ -39,7 +52,22 @@ func loadConfiguration() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// zero silently stops all status polling, a negative value panics when the bag
+	// list is truncated
+	err = ensurePositive("MAX_REQUESTS", cfg.MaxRequests)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg.HttpTimeout, err = envToInt("HTTP_TIMEOUT")
+	if err != nil {
+		return nil, err
+	}
+
+	// zero means the http client waits forever, a negative value means every request
+	// fails its deadline before it is even sent
+	err = ensurePositive("HTTP_TIMEOUT", cfg.HttpTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +130,6 @@ func loadConfiguration() (*Config, error) {
 	fmt.Printf("[CONFIG] APTUser         = [%s]\n", cfg.APTUser)
 	fmt.Printf("[CONFIG] APTKey          = [REDACTED]\n")
 	fmt.Printf("[CONFIG] APTStatusUrl    = [%s]\n", cfg.APTStatusUrl)
-	fmt.Printf("[CONFIG] HttpTimeout     = [%d]\n", cfg.HttpTimeout)
 
 	// database configuration
 	fmt.Printf("[CONFIG] DbHost          = [%s]\n", cfg.DbHost)
