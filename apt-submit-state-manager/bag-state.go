@@ -2,10 +2,23 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
+
+// a bag in one of these states has finished its journey and will not transition
+// again without operator intervention
+func bagStateIsTerminal(state string) bool {
+	switch state {
+	case uvaaptsdao.BagStatusComplete,
+		uvaaptsdao.BagStatusError,
+		uvaaptsdao.BagStatusAbandoned:
+		return true
+	}
+	return false
+}
 
 // bag was submitted to APT
 func handleBagSubmitted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
@@ -65,10 +78,12 @@ func handleBagRejected(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 // bag was successfully accepted by APT
 func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, workflowEvent *uvaaptsbus.UvaWorkflowEvent, dao *uvaaptsdao.Dao) error {
 
-	// in addition to updating the just accepted bag state
-	// check to see if a) the current submission status is in the 'pending-ingest' state and
-	// b) if the submission bag(s) are done
-	//
+	// update the state of the accepted bag first; the completeness check below then
+	// sees a consistent view of every bag and does not need to special case this one
+	err := dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusComplete)
+	if err != nil {
+		return err
+	}
 
 	// get the submission status
 	ss, err := dao.GetSubmissionStateByIdentifier(workflowEvent.SubmissionId)
@@ -76,43 +91,37 @@ func handleBagAccepted(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBusEvent, 
 		return err
 	}
 
-	// if the status is 'pending-ingest', check to see if all the bags are done
-	if ss.State == uvaaptsdao.SubmissionStatusPendingIngest {
+	// only a submission that is awaiting ingest can transition to complete; if a bag was
+	// rejected the submission is already 'incomplete' and must stay that way
+	if ss.State != uvaaptsdao.SubmissionStatusPendingIngest {
+		return nil
+	}
 
-		// check to see how many bags remain in the pending state... if none
-		// update the submission state to 'complete'
-		bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+	// the submission is complete only when every one of its bags has reached a
+	// terminal state; a bag that is still registered/building/ready/submitting or
+	// awaiting ingest means there is more work to come
+	bags, err := dao.GetBagsBySubmission(workflowEvent.SubmissionId)
+	if err != nil {
+		return err
+	}
+	for _, b := range bags {
+		bs, err := dao.GetBagStateBySubmissionAndName(workflowEvent.SubmissionId, b.Name)
 		if err != nil {
 			return err
 		}
-		allDone := true
-		for _, b := range bags {
-			if b.Name != workflowEvent.BagId {
-				bs, err := dao.GetBagStateBySubmissionAndName(workflowEvent.SubmissionId, b.Name)
-				if err != nil {
-					return err
-				}
-				if bs.State == uvaaptsdao.SubmissionStatusPendingIngest {
-					allDone = false
-					break
-				}
-			}
-		}
-		if allDone == true {
-			// update the status of the submission
-			err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusComplete)
-			if err != nil {
-				return err
-			}
-			err = publishWorkflowEvent(bus, uvaaptsbus.EventSubmissionComplete, busEvent.ClientId, workflowEvent.SubmissionId, "", "")
-			if err != nil {
-				return err
-			}
+		if bagStateIsTerminal(bs.State) == false {
+			fmt.Printf("INFO: submission <%s> not complete, bag <%s> is '%s'\n", workflowEvent.SubmissionId, b.Name, bs.State)
+			return nil
 		}
 	}
 
-	// update the state of the bag
-	return dao.UpdateBagState(workflowEvent.BagId, workflowEvent.SubmissionId, uvaaptsdao.BagStatusComplete)
+	// update the status of the submission
+	err = dao.UpdateSubmissionState(workflowEvent.SubmissionId, uvaaptsdao.SubmissionStatusComplete)
+	if err != nil {
+		return err
+	}
+
+	return publishWorkflowEvent(bus, uvaaptsbus.EventSubmissionComplete, busEvent.ClientId, workflowEvent.SubmissionId, "", "")
 }
 
 //
