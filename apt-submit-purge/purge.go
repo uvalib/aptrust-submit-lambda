@@ -8,7 +8,27 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 )
+
+// the client and submission identifiers arrive from the event bus and are used to build
+// a filesystem path that is recursively deleted; only accept plain path segments
+func ensureSafeIdentifier(name string, value string) error {
+
+	if len(value) == 0 {
+		err := fmt.Errorf("%s is empty", name)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
+	if value == "." || value == ".." || strings.ContainsAny(value, `/\`) {
+		err := fmt.Errorf("%s contains unexpected characters [%s]", name, value)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
+	return nil
+}
 
 func purgeS3Assets(s3Client *uvaS3Client, bucket string, keys []string) error {
 

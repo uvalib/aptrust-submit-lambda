@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 )
@@ -55,6 +56,16 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//	return err
 	//}
 
+	// validate the identifiers before they are used to build a path we delete from
+	err = ensureSafeIdentifier("client id", be.ClientId)
+	if err != nil {
+		return err
+	}
+	err = ensureSafeIdentifier("submission id", wf.SubmissionId)
+	if err != nil {
+		return err
+	}
+
 	// assets in [bucket|cache]/<clientId>/<submissionId>/[bagId]...
 	pathPrefix := path.Join(be.ClientId, wf.SubmissionId)
 
@@ -78,6 +89,15 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	//}
 
 	efsDir := path.Join(cfg.AssetFilesystem, pathPrefix)
+
+	// belt and braces: never purge the asset root itself or anything outside it
+	assetRoot := path.Clean(cfg.AssetFilesystem)
+	if efsDir == assetRoot || strings.HasPrefix(efsDir, assetRoot+"/") == false {
+		err = fmt.Errorf("refusing to purge [%s], outside asset root [%s]", efsDir, assetRoot)
+		fmt.Printf("ERROR: %s\n", err.Error())
+		return err
+	}
+
 	contents, err := os.ReadDir(efsDir)
 	if err != nil {
 		fmt.Printf("WARNING: listing cache assets (%s), continuing\n", err.Error())
