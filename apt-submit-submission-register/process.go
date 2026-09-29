@@ -66,7 +66,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the client details
 	c, err := dao.GetClientByIdentifier(r.ClientIdentifier)
 	if err != nil {
-		if errors.As(err, &uvaaptsdao.ErrClientNotFound) {
+		if errors.Is(err, uvaaptsdao.ErrClientNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)

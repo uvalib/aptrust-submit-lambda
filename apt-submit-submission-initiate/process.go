@@ -69,7 +69,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the client details
 	cli, err := dao.GetClientByIdentifier(r.ClientIdentifier)
 	if err != nil {
-		if errors.As(err, &uvaaptsdao.ErrClientNotFound) {
+		if errors.Is(err, uvaaptsdao.ErrClientNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusForbidden, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
@@ -78,7 +78,7 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// get the submission
 	sub, err := dao.GetSubmissionByIdentifier(r.SubmissionIdentifier)
 	if err != nil {
-		if errors.As(err, &uvaaptsdao.ErrSubmissionNotFound) {
+		if errors.Is(err, uvaaptsdao.ErrSubmissionNotFound) {
 			return apiGatewayProxyErrorResponse(http.StatusNotFound, err)
 		}
 		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
