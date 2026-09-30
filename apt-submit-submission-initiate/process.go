@@ -145,8 +145,12 @@ func process(messageId string, messageSrc string, request events.APIGatewayProxy
 	// create our event bus client
 	eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
 
-	// we are done, publish the appropriate event and terminate
-	_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, r.SubmissionIdentifier, "", "")
+	// we are done, publish the appropriate event and terminate. Without this event
+	// nothing will validate the submission, so do not report success to the caller
+	err = publishWorkflowEvent(eventBus, uvaaptsbus.EventSubmissionValidate, cli.Identifier, r.SubmissionIdentifier, "", "")
+	if err != nil {
+		return apiGatewayProxyErrorResponse(http.StatusInternalServerError, err)
+	}
 
 	fmt.Printf("DEBUG: response [%s]\n", string(buf))
 	return events.APIGatewayProxyResponse{Body: string(buf), StatusCode: http.StatusOK}, nil

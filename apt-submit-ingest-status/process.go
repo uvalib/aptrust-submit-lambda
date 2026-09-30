@@ -90,10 +90,15 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 					if status == AptStatusSuccess {
 						// victory, fire the accepted event
-						_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagAccepted, sub.Client, bg.Submission, bg.Name, "")
+						err = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagAccepted, sub.Client, bg.Submission, bg.Name, "")
 					} else {
 						// something terminal happened, fire the rejected event
-						_ = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagRejected, sub.Client, bg.Submission, bg.Name, "")
+						err = publishWorkflowEvent(eventBus, uvaaptsbus.EventBagRejected, sub.Client, bg.Submission, bg.Name, "")
+					}
+					if err != nil {
+						// the bag stays in 'pending-ingest' and is re-polled next run, so
+						// keep going rather than abandoning the rest of the batch
+						fmt.Printf("ERROR: publishing status event for <%s/%s>, continuing (%s)\n", bg.Submission, bg.Name, err.Error())
 					}
 
 				case AptStatusPending:

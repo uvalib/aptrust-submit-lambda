@@ -59,10 +59,13 @@ func handleSubmissionApproval(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 
 func submissionApproved(bus uvaaptsbus.UvaBus, dao *uvaaptsdao.Dao, clientId string, submissionId string, approver string, storage string) error {
 
-	// audit the approval
+	// audit the approval; this is the record of who authorised the deposit so do not
+	// approve without it. Nothing has been written yet, so returning here leaves no
+	// partial state behind and the event can be retried cleanly
 	err := dao.AddApproval(submissionId, approver)
 	if err != nil {
-		fmt.Printf("ERROR: adding approval record for [%s], continuing (%s)\n", submissionId, err.Error())
+		fmt.Printf("ERROR: adding approval record for [%s] (%s)\n", submissionId, err.Error())
+		return err
 	}
 
 	// update the storage for this submission
@@ -81,12 +84,21 @@ func submissionApproved(bus uvaaptsbus.UvaBus, dao *uvaaptsdao.Dao, clientId str
 		return err
 	}
 
-	// and generate a bag initiate event for each one
+	// and generate a bag initiate event for each one, attempting them all before giving up
+	var publishErr error
 	for _, bag := range bags {
 		err = publishWorkflowEvent(bus, uvaaptsbus.EventBagInitiate, clientId, submissionId, bag.Name, "")
 		if err != nil {
 			fmt.Printf("ERROR: publishing bag initiate event for <%s:%s>, continuing (%s)\n", submissionId, bag.Name, err.Error())
+			publishErr = err
 		}
+	}
+
+	// a bag with no initiate event will never be built, so leave the submission where it
+	// is and let the event be retried; moving to 'building' here would strand it waiting
+	// forever for a build that was never asked for
+	if publishErr != nil {
+		return publishErr
 	}
 
 	// update the state of the submission

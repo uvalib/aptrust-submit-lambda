@@ -19,8 +19,14 @@ func NewEventBus(eventBus string, eventSource string) (uvaaptsbus.UvaBus, error)
 }
 
 func publishWorkflowEvent(bus uvaaptsbus.UvaBus, eventName string, clientId string, submissionId string, bagId string, extra string) error {
+
+	// an absent bus is a deliberate configuration for running locally, so skipping the
+	// publish is not a failure and must not be reported as one; callers need a non-nil
+	// error to mean the event genuinely did not get out. Say something every time
+	// though, because a deployed function reaching here stalls the workflow silently
 	if bus == nil {
-		return uvaaptsbus.ErrConfig
+		fmt.Printf("WARNING: event bus not configured, [%s] for <%s/%s> not published\n", eventName, submissionId, bagId)
+		return nil
 	}
 	detail, _ := workflowPayload(submissionId, bagId, extra)
 	ev := uvaaptsbus.UvaBusEvent{
