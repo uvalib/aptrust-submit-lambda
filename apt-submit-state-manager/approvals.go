@@ -44,11 +44,9 @@ func handleSubmissionApproval(bus uvaaptsbus.UvaBus, busEvent *uvaaptsbus.UvaBus
 		return err
 	}
 
-	// validate that the submission state is as expected
-	if ss.State != uvaaptsdao.SubmissionStatusPendingApproval {
-		err = fmt.Errorf("submission [%s] in incorrect state for approvals (%s)", workflowEvent.SubmissionId, ss.State)
-		fmt.Printf("ERROR: %s\n", err.Error())
-		return err
+	// validate that the submission state is as expected; approval moves it to 'building'
+	if submissionCanTransition(workflowEvent.SubmissionId, ss.State, uvaaptsdao.SubmissionStatusPendingApproval, uvaaptsdao.SubmissionStatusBuilding) == false {
+		return nil
 	}
 
 	// unpack the extra payload
