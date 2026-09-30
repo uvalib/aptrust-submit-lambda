@@ -69,7 +69,7 @@ func (c *uvaS3Client) s3List(bucket string, key string) ([]string, error) {
 
 func (s *uvaS3Client) s3Remove(bucket string, key string) error {
 
-	fmt.Printf("INFO: deleting [%s/%s]", bucket, key)
+	fmt.Printf("INFO: deleting [%s/%s]\n", bucket, key)
 	start := time.Now()
 
 	_, err := s.client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
