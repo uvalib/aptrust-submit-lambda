@@ -72,8 +72,12 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		for _, bg := range bags {
 
 			if len(bg.ETag) != 0 {
-				// get the status, ignore errors
-				status, _ := getAptStatus(cfg, httpClient, bg)
+				// get the status; a failure is already logged, leave this bag for the next
+				// scheduled run rather than abandoning the rest of the batch
+				status, err := getAptStatus(cfg, httpClient, bg)
+				if err != nil {
+					continue
+				}
 				switch status {
 				// interesting statuses that generate events
 				case AptStatusCancelled, AptStatusFailed, AptStatusSuspended, AptStatusSuccess:
