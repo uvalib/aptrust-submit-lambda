@@ -50,7 +50,7 @@ func getAptStatus(cfg *Config, httpClient *http.Client, bag uvaaptsdao.Bag) (str
 	// both must describe exactly one status or we cannot say anything about this bag
 	if res.Count != 1 || len(res.Results) != 1 {
 		err = fmt.Errorf("expected exactly one status, got count %d carrying %d result(s)", res.Count, len(res.Results))
-		fmt.Printf("ERROR: cannot determine bag status for <%s/%s> (%s)\n", bag.Submission, bag.Name, err.Error())
+		fmt.Printf("WARNING: cannot determine bag status for <%s/%s> (%s)\n", bag.Submission, bag.Name, err.Error())
 		return AptStatusUnknown, err
 	}
 
