@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/uvalib/aptrust-submit-bus-definitions/uvaaptsbus"
 	"github.com/uvalib/aptrust-submit-db-dao/uvaaptsdao"
 )
 
@@ -41,8 +42,10 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	}
 
 	if len(submissions) != 0 {
+		fmt.Printf("INFO: %d submission(s) in '%s' status\n", len(submissions), uvaaptsdao.SubmissionStatusPendingApproval)
+
 		// create our event bus client
-		//eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
+		eventBus, _ := NewEventBus(cfg.BusName, cfg.BusEventSource)
 
 		// proces each of the submissions we know about
 		for _, s := range submissions {
@@ -53,21 +56,21 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 
 			createdYYYYMMDD := s.Created.Format("2006-01-02")
 
-			// approval was originally issued today
+			// if approval was originally issued today
 			if daysSince == 0 {
-				fmt.Printf("INFO: submission %s, original approval sent %s, no reminder required\n", s.Identifier, createdYYYYMMDD)
+				fmt.Printf("INFO: submission %s, original approval mail sent %s, no reminder required\n", s.Identifier, createdYYYYMMDD)
 			} else {
 				// how many days before we send a reminder
 				remaining := daysSince % cfg.ReminderDays
 				if remaining == 0 {
-					fmt.Printf("INFO: submission %s, original approval sent %s, sending reminder\n", s.Identifier, createdYYYYMMDD)
-					//err = publishWorkflowEvent(eventBus,
-					//	uvaaptsbus.EventCommandSubmissionEmailApprove,
-					//	s.Client,
-					//	s.Identifier,
-					//	"", "")
+					fmt.Printf("INFO: submission %s, original approval mail sent %s, sending reminder email\n", s.Identifier, createdYYYYMMDD)
+					err = publishWorkflowEvent(eventBus,
+						uvaaptsbus.EventCommandSubmissionEmailApprove,
+						s.Client,
+						s.Identifier,
+						"", "")
 				} else {
-					fmt.Printf("INFO: submission %s, original approval sent %s, reminder in %d days\n", s.Identifier, createdYYYYMMDD, remaining)
+					fmt.Printf("INFO: submission %s, original approval mail sent %s, reminder email in %d day(s)\n", s.Identifier, createdYYYYMMDD, remaining)
 				}
 			}
 		}
