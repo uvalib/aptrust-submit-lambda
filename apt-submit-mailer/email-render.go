@@ -26,7 +26,7 @@ func renderSubjectAndBody(cfg *Config, clientName string, recipient string, be *
 	var subject string
 	var url string
 	switch be.EventName {
-	case uvaaptsbus.EventSubmissionApprove:
+	case uvaaptsbus.EventSubmissionApprove, uvaaptsbus.EventCommandSubmissionEmailApprove:
 		templateFile = "templates/submission-approve.template"
 		subject = fmt.Sprintf("Approval required for %s APTrust submission", client)
 		url = cfg.ApprovalUrl

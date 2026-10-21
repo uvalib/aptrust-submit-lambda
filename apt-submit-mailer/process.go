@@ -26,6 +26,7 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 	case uvaaptsbus.EventSubmissionApprove:
 	case uvaaptsbus.EventSubmissionValidateFail:
 	case uvaaptsbus.EventSubmissionReconcileFail:
+	case uvaaptsbus.EventCommandSubmissionEmailApprove:
 	default:
 		fmt.Printf("WARNING: unexpected event type (%s), ignoring\n", be.EventName)
 		return nil
@@ -64,10 +65,11 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 		return err
 	}
 
-	// if this is (potentially) an approval email, ensure this is not an auto-approve submission
-	if be.EventName == uvaaptsbus.EventSubmissionApprove {
+	// if this is an approval email, ensure we have an approval email address
+	switch be.EventName {
+	case uvaaptsbus.EventSubmissionApprove, uvaaptsbus.EventCommandSubmissionEmailApprove:
 
-		// this will be an auto-approval so abandon the mailer
+		// no approval email address, this is an auto-approval submission
 		if len(cli.ApprovalEmail) == 0 {
 			fmt.Printf("INFO: auto-approve submission, no email necessary\n")
 			return nil
