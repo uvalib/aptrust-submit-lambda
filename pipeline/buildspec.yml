@@ -24,6 +24,10 @@ phases:
       #
       # build the assets
       #
+      # apt-submit-approve-reminder function
+      - cd ${CODEBUILD_SRC_DIR}/apt-submit-approve-reminder
+      - make linux
+      #
       # apt-submit-bag-status function
       - cd ${CODEBUILD_SRC_DIR}/apt-submit-bag-status
       - make linux
@@ -61,6 +65,9 @@ phases:
       - make linux
       #
       # copy to the results bucket
+      #
+      # apt-submit-approve-reminder function
+      - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-approve-reminder/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-approve-reminder/deployment.zip --quiet
       #
       # apt-submit-bag-status function
       - aws s3 cp ${CODEBUILD_SRC_DIR}/apt-submit-bag-status/bin/deployment.zip s3://${deploy_bucket}/${BUILD_VERSION}/apt-submit-bag-status/deployment.zip --quiet
