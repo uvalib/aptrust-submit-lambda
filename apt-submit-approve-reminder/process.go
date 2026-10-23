@@ -54,15 +54,16 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 			duration := time.Since(s.Created)
 			daysSince := int(duration.Hours() / 24)
 
+			// create the loggable date format
 			createdYYYYMMDD := s.Created.Format("2006-01-02")
 
 			// if approval was originally issued today
 			if daysSince == 0 {
 				fmt.Printf("INFO: submission %s, original approval mail sent %s, no reminder required\n", s.Identifier, createdYYYYMMDD)
 			} else {
-				// how many days before we send a reminder
-				remaining := daysSince % cfg.ReminderDays
-				if remaining == 0 {
+				// otherwise, how many days into a cycle are we
+				revolving := daysSince % cfg.ReminderDays
+				if revolving == 0 {
 					fmt.Printf("INFO: submission %s, original approval mail sent %s, sending reminder email\n", s.Identifier, createdYYYYMMDD)
 					err = publishWorkflowEvent(eventBus,
 						uvaaptsbus.EventCommandSubmissionEmailApprove,
@@ -70,6 +71,8 @@ func process(messageId string, messageSrc string, rawMsg json.RawMessage) error 
 						s.Identifier,
 						"", "")
 				} else {
+					// how many days before we send a reminder
+					remaining := cfg.ReminderDays - revolving
 					fmt.Printf("INFO: submission %s, original approval mail sent %s, reminder email in %d day(s)\n", s.Identifier, createdYYYYMMDD, remaining)
 				}
 			}
